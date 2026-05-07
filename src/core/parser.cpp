@@ -331,9 +331,16 @@ std::unordered_map<string, vector<string>> tag_catalog{
       }
     },
     {
+      "aggregator", 
+      {
+        "type",
+      }
+    },
+    {
       "integrator",
       {
         "type",
+        "depth",
       }
     },
     {
@@ -343,12 +350,26 @@ std::unordered_map<string, vector<string>> tag_catalog{
         "name",
         "color_type",
         "color",
+        "ambient",
+        "diffuse",
+        "specular",
+        "glossiness"
       }
     },
     {
       "named_material",
       {
         "name",
+      }
+    },
+    {
+      "light_source",
+      {
+        "type",
+        "i",
+        "scale",
+        "from",
+        "to",
       }
     },
     {
@@ -378,7 +399,8 @@ std::unordered_map<string, std::function<void(const ParamSet &)>> api_functions{
     {"world_end", API::world_end},   {"film", API::film},
     {"material", API::material},     {"object", API::object},
     {"integrator", API::integrator}, {"make_named_material", API::make_named_material},
-    {"named_material", API::named_material},
+    {"named_material", API::named_material}, {"light_source", API::light_source},
+      /*TODO: {"aggregator", API::agregator}*/
 };
 
 /// Maps convertion function to an attribute name.
@@ -414,6 +436,17 @@ std::unordered_map<string, ConverterFunction> converters{
     {"gamma_corrected", convert<bool>},
     {"radius", convert<double>},
     {"center", convert<Point3>},
+    // Light attributes
+    {"i", convert<RGBColor>},
+    {"scale", convert<RGBColor>},
+    {"from", convert<Point3>},
+    {"to", convert<Vec3>},
+    {"attenuation", convert<Vec3>},
+    {"ambient", convert<Vec3>},
+    {"diffuse", convert<Vec3>},
+    {"specular", convert<Vec3>},
+    {"glossiness", convert<double>},
+    {"depth", convert<double>},
 };
 
 /*!

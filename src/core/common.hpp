@@ -1,6 +1,8 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
+#include "ray.hpp"
+#include <ssmath/ssmath.hpp>
 #include <array>
 #include <cstdio>
 #include <optional>
@@ -17,7 +19,7 @@ using std::endl;
 using std::array;
 using std::vector;
 using std::string;
-
+using Vec3 = vec3<double>;
 // Corner indexes.
 enum Corners_e {
   BOTTOM_LEFT = 0,
@@ -47,6 +49,9 @@ struct RGBColor {
   float blue;
 
   RGBColor() : red(0), green(0), blue(0) {};
+  RGBColor(Vec3 color, std::string color_type){
+     *this = RGBColor(color[0], color[1], color[2], color_type);
+  };
   RGBColor(RGBColor color, std::string color_type){
      *this = RGBColor(color.red, color.green, color.blue, color_type);
   };
@@ -69,6 +74,7 @@ struct RGBColor {
   RGBColor operator*(const double& t  )const {return RGBColor(red * static_cast<float>(t), green * static_cast<float>(t), blue * static_cast<float>(t));}
   RGBColor operator*(const RGBColor& c) const{return RGBColor(red * c.red, green * c.green, blue * c.blue);};
   RGBColor operator+(const RGBColor& c)const {return RGBColor(red + c.red, green + c.green, blue + c.blue);};
+  bool operator==(const RGBColor& c) const {return red == c.red && green == c.green && blue == c.blue;};
 
   float&    operator[](const size_t index){
     if(index == 0)return red;

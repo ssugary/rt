@@ -102,6 +102,7 @@ template<typename T>
               */
             constexpr vec3<T> operator*(const T t) const {return vec3<T>(e[0] * t, e[1] * t, e[2] * t);};
 
+            constexpr vec3<T> operator*(const vec3<T> &v2)const{return vec3<T>(e[0] * v2[0], e[1] * v2[1], e[2] * v2[2]);};
             /**
               * @brief Divide um vetor por um escalar t.
               * @param t Escalar que está dividindo o vetor.

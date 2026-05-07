@@ -5,6 +5,13 @@
 #include <utility>
 
 #include "api.hpp"
+#include "ambient_light.hpp"
+#include "blinnPhongIntegrator.hpp"
+#include "blinn_phong_material.hpp"
+#include "camera.hpp"
+#include "common.hpp"
+#include "directional_light.hpp"
+#include "point_light.hpp"
 
 
 namespace rt {
@@ -82,7 +89,35 @@ void API::hard_engine_reset() {
   /// TODO
 }
 
+void API::light_source(const ParamSet &ps){
+  check_in_world_block_state("light_source()");
 
+  auto type = ps.retrieve<std::string>("type", "unknown");
+
+  if(type == "unknown"){
+    ERROR("API::light_source(): Missing \"type\" specification for the light source.");
+  }
+  auto color_type = ps.retrieve<string>("color_type", "spectre");
+  auto I = RGBColor(ps.retrieve<RGBColor>("i", rt::RGBColor()), color_type);
+  auto scale = RGBColor(ps.retrieve<RGBColor>("scale", {1, 1, 1}), color_type);
+
+  if(type == "point"){
+    auto from = ps.retrieve<Point3>("from", {0, 0, 0});
+    auto attenuation = ps.retrieve<Vec3>("attenuation", {1, 0, 0});
+    m_render_options->light_sources.push_back(std::make_shared<PointLight>(from, I, scale, attenuation));
+    }
+  else if(type == "directional"){
+    auto from = ps.retrieve<Point3>("from", {0, 0, 0});
+    auto to = ps.retrieve<Vec3>("to", {0, 0, 0});
+
+    auto direction = to - from;
+    m_render_options->light_sources.push_back( std::make_shared<DirectionalLight>(direction, I, scale));
+  }
+  else if (type == "ambient"){
+    m_render_options->light_sources.push_back(std::make_shared<AmbientLight>(I, scale));
+  }
+
+}
 
 void API::film(const ParamSet &ps) {
   if (not check_in_setup_block_state("API::film()")) {
@@ -148,6 +183,10 @@ std::unique_ptr<Integrator> API::make_integrator(const ParamSet& ps){
   else if(integrator_type == "normal_map"){
     inter = std::make_unique<NormalMapIntegrator>(m_render_options->camera);
   }
+  else if(integrator_type == "blinn_phong"){
+    auto depth = ps.retrieve<double>("depth", 1.0f);
+    inter = std::make_unique<BlinnPhongIntegrator>(m_render_options->camera, depth);
+  }
   else{
     WARNING(string{"Integrator \""} + integrator_type + string{"\" unknown."});
   }
@@ -185,7 +224,8 @@ void API::world_end(const ParamSet &ps) {
   for(auto& obj : m_render_options->elements){
     primitive_list->add(obj);
   }
-  auto scene = std::make_unique<Scene>(primitive_list, m_render_options->background);
+
+  auto scene = std::make_unique<Scene>(primitive_list, m_render_options->background, m_render_options->light_sources);
 
   std::unique_ptr<Film> film = make_film(m_render_options->setup_params["film"]);
 
@@ -258,18 +298,27 @@ void API::camera(const ParamSet &ps) {
   m_render_options->setup_params["camera"] = ps;
 }
 
-void API::material(const ParamSet &ps) {
-  check_in_world_block_state("API::material");
-  auto type = ps.retrieve<std::string>("type", "unknown");
-  if (type == "unknown") {
-    ERROR("API::material(): Missing \"type\" specification for the material.");
+  void API::material(const ParamSet &ps) {
+    check_in_world_block_state("API::material");
+    auto type = ps.retrieve<std::string>("type", "unknown");
+    if (type == "unknown") {
+      ERROR("API::material(): Missing \"type\" specification for the material.");
+    }
+    auto color_type = ps.retrieve<std::string>("color_type", "rgb");
+    auto color = RGBColor(ps.retrieve<RGBColor>("color", RGBColor()), color_type);
+    if(type == "flat"){
+      m_render_options->current_material =  std::shared_ptr<Material>(new FlatMaterial(color));
+    }
+    else if (type == "blinn"){
+      auto ambient = RGBColor(ps.retrieve<Vec3>("ambient", {0,0,0}), color_type);
+      auto diffuse = RGBColor(ps.retrieve<Vec3>("diffuse", {0,0,0}), color_type);
+      auto specular = RGBColor(ps.retrieve<Vec3>("specular", {0,0,0}), color_type);
+      auto glossiness = ps.retrieve<double>("glossiness", 0.0f);
+      std::cout << "Criando Material Blinn - Difuso: " 
+          << diffuse.red << " " << diffuse.green << " " << diffuse.blue << "\n";
+      m_render_options->current_material = std::make_shared<BlinnPhongMaterial>(diffuse, specular, ambient, glossiness);
+    }
   }
-  auto color_type = ps.retrieve<std::string>("color_type", "rgb");
-  auto color = RGBColor(ps.retrieve<RGBColor>("color", RGBColor()), color_type);
-  if(type == "flat"){
-    m_render_options->current_material =  std::shared_ptr<Material>(new FlatMaterial(color));
-  }
-}
 
 void API::object(const ParamSet &ps) {
   check_in_world_block_state("API::object");
@@ -302,10 +351,22 @@ void API::make_named_material(const ParamSet &ps){
   if(material_id == "unknown"){
     ERROR("API::make_named_material(): Missing \"name\" specification for the material.");
   }
-  auto color_type = ps.retrieve<std::string>("color_type", "rgb");
+  auto color_type = ps.retrieve<std::string>("color_type", "spectre");
   auto color = RGBColor(ps.retrieve<RGBColor>("color", RGBColor()), color_type);
   if(type == "flat"){
+    color_type = "rgb";
     m_render_options->material_memory[material_id] =(std::shared_ptr<Material>(new FlatMaterial(color)));
+  }
+  else if(type == "blinn"){
+    
+    auto ambient = RGBColor(ps.retrieve<Vec3>("ambient", {0, 0, 0}), color_type);
+    auto diffuse = RGBColor(ps.retrieve<Vec3>("diffuse", {0, 0, 0}), color_type);
+    auto specular = RGBColor(ps.retrieve<Vec3>("specular", {0, 0, 0}), color_type);
+    auto glossiness = ps.retrieve<double>("glossiness", 0.0f);
+      std::cout << "Criando Material Blinn - Difuso: " 
+          << diffuse.red << " " << diffuse.green << " " << diffuse.blue << "\n";
+
+    m_render_options->material_memory[material_id] = std::make_shared<BlinnPhongMaterial>(diffuse, specular, ambient, glossiness);
   }
 }
 
@@ -331,7 +392,7 @@ void API::render() {
     primitive_list->add(obj);
   }
 
-  m_render_options->scene = std::make_unique<Scene>(primitive_list, m_render_options->background);
+  m_render_options->scene = std::make_unique<Scene>(primitive_list, m_render_options->background, m_render_options->light_sources);
   
   if(m_render_options->integrator){
     m_render_options->integrator->render(*m_render_options->scene);

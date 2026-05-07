@@ -15,6 +15,7 @@ namespace rt{
         public:
             virtual ~Material() = default;
             virtual RGBColor kd() const = 0;
+            
     };
 }      //< namespace rt
 #endif //< MATERIAL_HPP

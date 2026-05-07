@@ -5,6 +5,7 @@
 #include "material.hpp"
 
 namespace rt{
+
     class BlinnPhongMaterial : public Material{
         private:
             RGBColor diffuse;   //< color that indicates how much diffuse color is reflected.
@@ -13,7 +14,7 @@ namespace rt{
             double glossiness;  //< value that control how narrowed is the specular highlight in the scene.
 
         public:
-
+        BlinnPhongMaterial() : diffuse(), specular(), ambient(), glossiness() {};
         BlinnPhongMaterial(RGBColor diffuse, RGBColor specular, RGBColor ambient, double glossiness) :
                           diffuse(diffuse), specular(specular), ambient(ambient), glossiness(glossiness) {};
 

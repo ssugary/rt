@@ -10,6 +10,7 @@ void SamplerIntegrator::render(const rt::Scene& scene){
   if(!camera){
     return;
   }
+  
   preprocess(scene);
   
   auto w = camera->film->width();

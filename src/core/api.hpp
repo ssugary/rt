@@ -4,6 +4,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "include_lights.hpp"
 #include "scenes.hpp"
 #include "background.hpp"
 #include "camera.hpp"
@@ -22,6 +23,7 @@ struct RenderOptions {
   std::unique_ptr<Integrator> integrator;
   std::unique_ptr<rt::Scene> scene;
 
+  std::vector<std::shared_ptr<Light>> light_sources;
   std::vector<std::shared_ptr<Primitive>> elements;
   std::unordered_map<string, ParamSet> setup_params;
 
@@ -67,6 +69,7 @@ public:
   static void integrator(const ParamSet &ps);
   static void make_named_material(const ParamSet &ps);
   static void named_material(const ParamSet &ps);
+  static void light_source(const ParamSet& ps);
 
   // Methods that create the objects based on paramset's data
   static std::unique_ptr<Camera> make_camera(const ParamSet &camera,
