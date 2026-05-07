@@ -8,7 +8,7 @@ RGBColor PointLight::sample_Li(const Surfel& hit, Vec3* wi){
     *wi = unit_vec(direction);
     
     double dist = direction.length();
-    double att = 1.0f / (attenuation[0] + dist * attenuation[1] + dist * dist * attenuation[2]);
+    att = 1.0f / (attenuation[0] + dist * attenuation[1] + dist * dist * attenuation[2]);
 
     return intensity * scale * att;
 }

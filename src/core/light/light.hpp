@@ -2,8 +2,14 @@
 #define LIGHT_HPP
 
 #include "common.hpp"
-#include "scenes.hpp"
 #include "surfel.hpp"
+
+#ifndef SCENES_HPP
+namespace rt{
+    class Light;
+}
+#include "scenes.hpp"
+#endif  //< SCENES_HPP
 
 namespace rt{
 
@@ -24,6 +30,7 @@ namespace rt{
 
             virtual ~Light() = default;
             Light(RGBColor intensity, RGBColor scale) : intensity(intensity), scale(scale){};
+
             virtual rt::RGBColor sample_Li( const Surfel& hit, Vec3* wi  ) = 0;
 
             virtual void preprocess( const Scene & ) {};

@@ -8,21 +8,28 @@
 #include "ray.hpp"
 #include <memory>
 
+#ifndef LIGHT_HPP
+namespace rt{
+    class Scene;
+}
+#include "light.hpp"
+#endif  //< LIGHT_HPP
 
 namespace rt {
 
 class Scene {
     //=== Public data
     public:
-        //std::vector<shared_ptr<Light>> lights; // list of lights
-        std::shared_ptr< Background > background; // The background object.
+        std::vector<std::shared_ptr<Light>> lights; // list of lights
+        std::shared_ptr< Background > background; //< The background object.
     private:
-        std::shared_ptr<Primitive> aggregate; // The scene graph of objects, acceleration structure.
+        std::shared_ptr<Primitive> aggregate;     //< The scene graph of objects, acceleration structure.
+        
 
     //=== Public interface
     public:
-        Scene( std::shared_ptr<Primitive> ag, std::shared_ptr< Background > bkg)
-             : background{bkg}, aggregate{ag}
+        Scene( std::shared_ptr<Primitive> ag, std::shared_ptr< Background > bkg, std::vector<std::shared_ptr<Light>> lights)
+             : lights(lights), background{bkg}, aggregate{ag}
         {}
         /// Determines the intersection info; return true if there is an intersection.
         bool intersect( const Ray& r, Surfel *isect ) const;

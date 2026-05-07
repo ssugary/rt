@@ -14,7 +14,7 @@ namespace rt{
     class Material {
         public:
             virtual ~Material() = default;
-            virtual rt::RGBColor kd() const = 0;
+            virtual RGBColor kd() const = 0;
     };
 }      //< namespace rt
 #endif //< MATERIAL_HPP
@@ -26,11 +26,11 @@ namespace rt{
 namespace rt{
     class FlatMaterial : public Material{
         public:
-            FlatMaterial(rt::RGBColor color) : color(color){};
+            FlatMaterial(RGBColor color) : color(color){};
             FlatMaterial(Material &mat);
 
-            rt::RGBColor color;
-            rt::RGBColor kd() const override {return color;}
+            RGBColor color;
+            RGBColor kd() const override {return color;}
     };
 }       //< namespace rt
 #endif  //< FLAT_MATERIAL_HPP
