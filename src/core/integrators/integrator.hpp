@@ -23,7 +23,7 @@ class SamplerIntegrator : public Integrator {
 
         virtual std::optional<rt::RGBColor> Li(const Ray& ray, const rt::Scene& scene) const = 0;
         virtual void render(const rt::Scene& scene) override;
-        virtual void preprocess(const rt::Scene& scene){};
+        virtual void preprocess(const rt::Scene& scene) {};
 
 };
 }

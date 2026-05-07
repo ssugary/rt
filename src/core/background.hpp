@@ -29,16 +29,15 @@ public:
   // Sample and returns a color, based on the raster coordinate.
   RGBColor sample(real_type u, real_type v) const;
 
-  void dummy();
+  // Return the linearly interpolated color in [A;B], based on the parameter
+  static RGBColor linear_interpolation(const RGBColor &A, const RGBColor &B,
+                                double t);
 
 private:
   // Each corner has a color associated with.
   array<RGBColor, 4> m_corners{RGBColor(), RGBColor(), RGBColor(), RGBColor()};
   BackgroundType_e m_type{};
 
-  // Return the linearly interpolated color in [A;B], based on the parameter
-  RGBColor linear_interpolation(const RGBColor &A, const RGBColor &B,
-                                double t) const;
 };
 
 std::shared_ptr<Background> create_color_background(std::string_view type, const ParamSet &ps);

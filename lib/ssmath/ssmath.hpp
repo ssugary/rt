@@ -29,5 +29,16 @@
 #include "mat3.hpp"
 #include "mat4.hpp"
 
+/**
+ * @brief Calcula d distância euclidiana entre pontos 3D.
+ * @param p1 O primeiro ponto 3D.
+ * @param p2 O segundo ponto 3D.
+ * @return A distância entre eles.
+ */
+template <typename T>
+inline double euclidean_distance_3D(const vec3<T> &p1, const vec3<T> &p2) {
+  return sqrt(pow(p1.x() - p2.x(), 2) + pow(p1.y() - p2.y(), 2) +
+              pow(p1.z() - p2.z(), 2));
+};
 
 #endif // SSUGARY_MATH_CORE_HPP

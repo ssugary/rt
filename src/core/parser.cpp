@@ -316,50 +316,45 @@ std::unordered_map<string, vector<string>> tag_catalog{
          "look_at",
          "up",
      }},
-     {"material",
-      {
-        "type",
-        "color_type",
-        "color",
-      }
-     },
-     {"object",
-      {
-        "type",
-        "radius",
-        "center",
-      }
-    },
+    {"material",
+     {
+         "type",
+         "color_type",
+         "color",
+     }},
+    {"object",
+     {
+         "type",
+         "radius",
+         "center",
+     }},
+    {"integrator",
+     {
+         "type",
+         // Depth Integrator
+         "zmin",
+         "zmax",
+         "near_color",
+         "far_color",
+     }},
+    {"make_named_material",
+     {
+         "type",
+         "name",
+         "color_type",
+         "color",
+     }},
+    {"named_material",
+     {
+         "name",
+     }},
+    {"include",
+     {
+         "filename",
+     }},
     {
-      "integrator",
-      {
-        "type",
-      }
-    },
-    {
-      "make_named_material",
-      {
-        "type",
-        "name",
-        "color_type",
-        "color",
-      }
-    },
-    {
-      "named_material",
-      {
-        "name",
-      }
-    },
-    {
-      "include",
-      {
-        "filename",
-      }
-    },
-    {
-      "render_again",
-      {""},   // no attributes
+        "render_again",
+        {""}, // no attributes
     },
     {
         "world_begin",
@@ -373,11 +368,16 @@ std::unordered_map<string, vector<string>> tag_catalog{
 
 /// Maps the tag name to its corresponding API function.
 std::unordered_map<string, std::function<void(const ParamSet &)>> api_functions{
-    {"background", API::background}, {"camera", API::camera},
-    {"lookat", API::look_at},        {"world_begin", API::world_begin},
-    {"world_end", API::world_end},   {"film", API::film},
-    {"material", API::material},     {"object", API::object},
-    {"integrator", API::integrator}, {"make_named_material", API::make_named_material},
+    {"background", API::background},
+    {"camera", API::camera},
+    {"lookat", API::look_at},
+    {"world_begin", API::world_begin},
+    {"world_end", API::world_end},
+    {"film", API::film},
+    {"material", API::material},
+    {"object", API::object},
+    {"integrator", API::integrator},
+    {"make_named_material", API::make_named_material},
     {"named_material", API::named_material},
 };
 
@@ -414,6 +414,11 @@ std::unordered_map<string, ConverterFunction> converters{
     {"gamma_corrected", convert<bool>},
     {"radius", convert<double>},
     {"center", convert<Point3>},
+	// Integrator
+	{"zmin", convert<double>},
+	{"zmax", convert<double>},
+    {"near_color", convert<RGBColor>},
+    {"far_color", convert<RGBColor>},
 };
 
 /*!
@@ -555,9 +560,10 @@ void Parser::parse_scene(const string filename) {
       continue; // This tag doesn't have an API function associated with; get
                 // next tag.
     }
-    if (tag_name == "render_again"){
-     std::ostringstream oss;
-      oss << "<<<<< <render_again> tag was founded! Starting the Rendering phase."
+    if (tag_name == "render_again") {
+      std::ostringstream oss;
+      oss << "<<<<< <render_again> tag was founded! Starting the Rendering "
+             "phase."
           << ".\n";
       MESSAGE(oss.str());
       rt::API::m_api_state = rt::API::World;

@@ -22,7 +22,7 @@ Background::Background(const std::array<RGBColor, 4> &colors) {
 }
 
 RGBColor Background::linear_interpolation(const RGBColor &A, const RGBColor &B,
-                                          double t) const {
+                                          double t) {
   return RGBColor{static_cast<float>((1 - t) * A.red + t * B.red),
                   static_cast<float>((1 - t) * A.green + t * B.green),
                   static_cast<float>((1 - t) * A.blue + t * B.blue), "rgb"};
@@ -40,25 +40,6 @@ RGBColor Background::sample(real_type u, real_type v) const {
   return bilerp;
 };
 
-void Background::dummy() {
-	std::ofstream img("out.ppm");
-
-  img << "P3" << "\n";
-  img << width << " " << height << "\n";
-  img << max << "\n";
-
-  for (d y = 0; y < height; y++) {
-    for (d x = 0; x < width; x++) {
-      const real_type u = x / (width - 1);
-      const real_type v = y / (height - 1);
-
-      const RGBColor color = sample(u, v);
-
-      img << color.red << " " << color.green << " " << color.blue << "\n";
-    }
-  }
-  img.close();
-}
 
 // @author = Selan Santos
 // ===
