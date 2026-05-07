@@ -20,10 +20,14 @@ DepthMapIntegrator::Li(const Ray &ray, const rt::Scene &scene) const {
   double hit_dist = euclidean_distance_3D(cam_origin, ray_hit);
 
   double z_norm = (hit_dist - m_zmin_abs) / (m_zmax_abs - m_zmin_abs);
+
   z_norm = std::clamp(z_norm, m_zmin, m_zmax);
 
+  RGBColor near = m_near_color * m_zmin;
+  RGBColor far = m_far_color * m_zmax;
+
   RGBColor color =
-      Background::linear_interpolation(m_near_color, m_far_color, z_norm);
+      Background::linear_interpolation(near, far, z_norm);
 
   return color;
 }
