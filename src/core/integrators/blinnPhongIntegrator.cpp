@@ -9,7 +9,7 @@
 namespace rt {
 
     std::optional<RGBColor> BlinnPhongIntegrator::Li(const Ray& ray, const rt::Scene& scene) const {
-        Vec3 L(0, 0, 0);
+        RGBColor L(0, 0, 0);
         rt::Surfel isect;
         if(!scene.intersect(ray, &isect)){
             return std::nullopt;
@@ -22,15 +22,15 @@ namespace rt {
 
         fm = std::dynamic_pointer_cast<BlinnPhongMaterial>( isect.primitive->get_material());
 
-        Vec3 ka = Vec3(fm->ka().red, fm->ka().green, fm->ka().blue);
-        Vec3 kd = Vec3(fm->kd().red, fm->kd().green, fm->kd().blue);
-        Vec3 ks = Vec3(fm->ks().red, fm->ks().green, fm->ks().blue);
+        RGBColor ka = fm->ka();
+        RGBColor kd = fm->kd();
+        RGBColor ks = fm->ks();
+
         if(!fm)return RGBColor{0, 0, 0};
 
         for(auto& light : scene.lights){
             Vec3 wi;
-            auto Li_color = light->sample_Li(isect, &wi);
-            auto Li = Vec3(Li_color.red, Li_color.green, Li_color.blue);
+            auto Li =  light->sample_Li(isect, &wi);
             if(light->flag == light_flag_e::ambient){
                 L = L + ka * Li;
             }
@@ -47,7 +47,7 @@ namespace rt {
                 double diff_factor = std::max(0.0, dot(n, l));
                 auto diffuse = kd * diff_factor;
 
-                Vec3 specular{0, 0, 0};
+                RGBColor specular{0, 0, 0};
 
                 if (diff_factor > 0.0) {
                     specular = ks * std::pow(std::max(0.0, dot(n, h)), fm->gg());
@@ -57,7 +57,9 @@ namespace rt {
             }
 
         }
-        return RGBColor(L, "spectre");
+
+
+        return RGBColor(L.red, L.green, L.blue, "spectre");
     }
 
 };
