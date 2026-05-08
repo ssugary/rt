@@ -242,6 +242,7 @@ void API::world_end(const ParamSet &ps) {
     camera->film = std::move(film);
     m_render_options->camera = std::move(camera);
     m_render_options->scene = std::move(scene);
+    m_render_options->integrator = make_integrator(m_render_options->setup_params["integrator"]);
   }
 
   // The scene has already been parsed and properly set up. It's time to render
@@ -304,15 +305,19 @@ void API::camera(const ParamSet &ps) {
     if (type == "unknown") {
       ERROR("API::material(): Missing \"type\" specification for the material.");
     }
-    auto color_type = ps.retrieve<std::string>("color_type", "rgb");
-    auto color = RGBColor(ps.retrieve<RGBColor>("color", RGBColor()), color_type);
+
     if(type == "flat"){
+      auto color_type = ps.retrieve<std::string>("color_type", "rgb");
+      auto color = RGBColor(ps.retrieve<RGBColor>("color", RGBColor()), color_type);
       m_render_options->current_material =  std::shared_ptr<Material>(new FlatMaterial(color));
     }
     else if (type == "blinn"){
-      auto ambient = RGBColor(ps.retrieve<Vec3>("ambient", {0,0,0}), color_type);
-      auto diffuse = RGBColor(ps.retrieve<Vec3>("diffuse", {0,0,0}), color_type);
-      auto specular = RGBColor(ps.retrieve<Vec3>("specular", {0,0,0}), color_type);
+      auto color_type = ps.retrieve<std::string>("color_type", "spectre");
+      RGBColor ambient(ps.retrieve<RGBColor>("ambient", {0,0,0}), color_type);
+      RGBColor diffuse(ps.retrieve<RGBColor>("diffuse", {0,0,0}), color_type);
+      RGBColor specular(ps.retrieve<RGBColor>("specular", {0,0,0}), color_type);
+
+
       auto glossiness = ps.retrieve<double>("glossiness", 0.0f);
       std::cout << "Criando Material Blinn - Difuso: " 
           << diffuse.red << " " << diffuse.green << " " << diffuse.blue << "\n";
@@ -351,14 +356,14 @@ void API::make_named_material(const ParamSet &ps){
   if(material_id == "unknown"){
     ERROR("API::make_named_material(): Missing \"name\" specification for the material.");
   }
-  auto color_type = ps.retrieve<std::string>("color_type", "spectre");
-  auto color = RGBColor(ps.retrieve<RGBColor>("color", RGBColor()), color_type);
   if(type == "flat"){
-    color_type = "rgb";
+
+    auto color_type = ps.retrieve<std::string>("color_type", "rgb");
+    auto color = RGBColor(ps.retrieve<RGBColor>("color", RGBColor()), color_type);
     m_render_options->material_memory[material_id] =(std::shared_ptr<Material>(new FlatMaterial(color)));
   }
   else if(type == "blinn"){
-    
+    auto color_type = ps.retrieve<std::string>("color_type", "spectre");
     auto ambient = RGBColor(ps.retrieve<Vec3>("ambient", {0, 0, 0}), color_type);
     auto diffuse = RGBColor(ps.retrieve<Vec3>("diffuse", {0, 0, 0}), color_type);
     auto specular = RGBColor(ps.retrieve<Vec3>("specular", {0, 0, 0}), color_type);
@@ -385,16 +390,16 @@ void API::render() {
   // -------------------------------------------------------------
   // The Film object holds the memory for the image.
 
-  m_render_options->integrator = make_integrator(m_render_options->setup_params["integrator"]);
+  // m_render_options->integrator = make_integrator(m_render_options->setup_params["integrator"]);
 
-  auto primitive_list = std::make_shared<PrimitiveList>();
-  for(auto& obj : m_render_options->elements){
-    primitive_list->add(obj);
-  }
+  // auto primitive_list = std::make_shared<PrimitiveList>();
+  // for(auto& obj : m_render_options->elements){
+  //   primitive_list->add(obj);
+  // }
 
-  m_render_options->scene = std::make_unique<Scene>(primitive_list, m_render_options->background, m_render_options->light_sources);
+  // m_render_options->scene = std::make_unique<Scene>(primitive_list, m_render_options->background, m_render_options->light_sources);
   
-  if(m_render_options->integrator){
+  if(m_render_options->integrator && m_render_options->scene){
     m_render_options->integrator->render(*m_render_options->scene);
   }
 }
