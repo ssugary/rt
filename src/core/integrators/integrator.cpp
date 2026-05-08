@@ -28,7 +28,11 @@ void SamplerIntegrator::render(const rt::Scene& scene){
         auto v = 1.0f - float(j) / float(h);
         rt::RGBColor L = (temp_L.has_value()) ?  temp_L.value() : scene.background->sample(u, v);
 
-        camera->film->add(rt::Pixel{static_cast<byte>(i), static_cast<byte>(j)}, L);
+        L.red = std::clamp(L.red, 0.0, 1.0);
+        L.green = std::clamp(L.green, 0.0, 1.0);
+        L.blue = std::clamp(L.blue, 0.0, 1.0);
+
+        camera->film->add(rt::Pixel{static_cast<u_int64_t>(i), static_cast<u_int64_t>(j)}, L);
       }
   }
     // send image color buffer to the output file.
