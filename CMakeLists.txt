@@ -38,7 +38,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/core/integrators
     ${CMAKE_SOURCE_DIR}/src/core/materials
-    ${CMAKE_SOURCE_DIR}/src/core/light/
+    ${CMAKE_SOURCE_DIR}/src/core/light
     ${CMAKE_SOURCE_DIR}/src/core/primitives
     ${CMAKE_SOURCE_DIR}/src/msg_system
     ${CMAKE_SOURCE_DIR}/lib

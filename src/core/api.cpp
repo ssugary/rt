@@ -338,7 +338,53 @@ void API::object(const ParamSet &ps) {
     }
     auto center = ps.retrieve<Point3>("center", {0, 0, 0});
     m_render_options->elements.push_back( std::make_shared<Sphere>(center, radius, m_render_options->current_material));
-  } else
+  }
+  else if (type == "triangle"){
+    Point3 p0 = ps.retrieve<Point3>("p0", Point3(-1, 0, 0));
+    Point3 p1 = ps.retrieve<Point3>("p1", Point3( 1, 0, 0));
+    Point3 p2 = ps.retrieve<Point3>("p2", Point3( 0, 1, 0));
+    
+    m_render_options->elements.push_back(
+        std::make_shared<Triangle>(p0, p1, p2, m_render_options->current_material)
+    );
+  }
+  else if(type == "plane"){
+    Point3 p = ps.retrieve<Point3>("p", Point3(0, 0, 0));
+    Vec3 n   = ps.retrieve<Vec3>("n", Vec3(0, 1, 0));
+    
+    m_render_options->elements.push_back(
+        std::make_shared<Plane>(p, n, m_render_options->current_material)
+    );
+  }
+  else if (type == "star") {
+    Point3 center  = ps.retrieve<Point3>("center", Point3(0, 0, 0));
+    double r_outer = ps.retrieve<double>("r_outer", 2.0);
+    double r_inner = ps.retrieve<double>("r_inner", 0.8);
+    
+    m_render_options->elements.push_back(
+        std::make_shared<Star>(center, r_outer, r_inner, m_render_options->current_material)
+    );
+} 
+  else if (type == "square") {
+      Point3 p0 = ps.retrieve<Point3>("p0", Point3(-1, 0, -1));
+      Point3 p1 = ps.retrieve<Point3>("p1", Point3( 1, 0, -1));
+      Point3 p2 = ps.retrieve<Point3>("p2", Point3( 1, 0,  1));
+      Point3 p3 = ps.retrieve<Point3>("p3", Point3(-1, 0,  1));
+      
+      m_render_options->elements.push_back(
+          std::make_shared<Square>(p0, p1, p2, p3, m_render_options->current_material)
+      );
+  }
+  else if (type == "cube") {
+    Point3 center = ps.retrieve<Point3>("center", Point3(0, 0, 0));
+    double size   = ps.retrieve<double>("size", 1.0);
+    
+    m_render_options->elements.push_back(
+        std::make_shared<Cube>(center, size, m_render_options->current_material)
+    );
+}
+
+  else
     ERROR("API::object(): Missing \"type\" specification for the object.");
 }
 

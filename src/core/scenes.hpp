@@ -12,7 +12,7 @@
 namespace rt{
     class Scene;
 }
-#include "light.hpp"
+#include "light/light.hpp"
 #endif  //< LIGHT_HPP
 
 namespace rt {

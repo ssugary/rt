@@ -4,7 +4,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include "include_lights.hpp"
+#include "light/include_lights.hpp"
 #include "scenes.hpp"
 #include "background.hpp"
 #include "camera.hpp"

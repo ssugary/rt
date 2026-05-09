@@ -11,8 +11,8 @@ class Sphere : public Primitive {
 
     public:
         Sphere(Point3 center, float radius,std::shared_ptr<Material> mat);
-        bool intersect(const Ray &r, Surfel *sf) const;
-        bool intersect_p(const Ray &r) const;
+        bool intersect(const Ray &r, Surfel *sf) const override;
+        bool intersect_p(const Ray &r) const override;
 };
 }
 #endif

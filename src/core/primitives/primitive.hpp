@@ -14,6 +14,7 @@ class Primitive;
 #endif  //< SURFEL_HPP
 
 namespace rt{
+constexpr float epsilon = std::numeric_limits<float>::epsilon();
 class Primitive {
 protected:
   std::shared_ptr<Material> material;
