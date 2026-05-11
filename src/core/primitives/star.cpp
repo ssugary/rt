@@ -14,7 +14,7 @@ namespace rt{
             if(i % 2 == 0){
                 r = rout;
             }
-            double theta = M_PI/2.0;
+            double theta = M_PI/4.0; //M_PI/2.0;
             theta += i * (M_PI / 5.0);
 
             double x = p[0] + (r * std::cos(theta));
