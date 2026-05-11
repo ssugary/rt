@@ -1,7 +1,6 @@
 #ifndef DIRECTIONAL_LIGHTS_HPP
 #define DIRECTIONAL_LIGHTS_HPP
 
-#include "camera.hpp"
 #include "common.hpp"
 #include "light.hpp"
 

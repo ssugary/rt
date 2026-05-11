@@ -4,14 +4,15 @@
 #include <memory>
 #include <unordered_map>
 
-#include "light/include_lights.hpp"
+
 #include "scenes.hpp"
 #include "background.hpp"
-#include "camera.hpp"
 #include "error.hpp"
 #include "film.hpp"
 #include "parser.hpp"
+
 #include "include_integrator.hpp"
+#include "light/include_lights.hpp"
 #include "include_primitive.hpp"
 #include "include_material.hpp"
 
