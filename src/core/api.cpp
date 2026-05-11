@@ -349,8 +349,8 @@ void API::object(const ParamSet &ps) {
     );
   }
   else if(type == "plane"){
-    Point3 p = ps.retrieve<Point3>("p", Point3(0, 0, 0));
-    Vec3 n   = ps.retrieve<Vec3>("n", Vec3(0, 1, 0));
+    Point3 p = ps.retrieve<Point3>("point", Point3(0, 0, 0));
+    Vec3 n   = ps.retrieve<Vec3>("normal", Vec3(0, 1, 0));
     
     m_render_options->elements.push_back(
         std::make_shared<Plane>(p, n, m_render_options->current_material)

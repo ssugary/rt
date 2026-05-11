@@ -334,6 +334,8 @@ std::unordered_map<string, vector<string>> tag_catalog{
         "base_size",
         "r_inner",
         "r_outer",
+        "point",
+        "normal",
         "p0",
         "p1",
         "p2",
@@ -454,6 +456,8 @@ std::unordered_map<string, ConverterFunction> converters{
     {"base_size", convert<double>},
     {"r_inner", convert<double>},
     {"r_outer", convert<double>},
+    {"point", convert<Point3>},
+    {"normal", convert<Vec3>},
     {"p0", convert<Point3>},
     {"p1", convert<Point3>},
     {"p2", convert<Point3>},
@@ -607,6 +611,7 @@ void Parser::parse_scene(const string filename) {
         ERROR(oss.str());
       }
       // Recursive call to process subfile.
+      
       parse_scene(filename.c_str());
       continue; // This tag doesn't have an API function associated with; get
                 // next tag.
