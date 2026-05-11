@@ -15,13 +15,10 @@ std::optional<rt::RGBColor> NormalMapIntegrator::Li(const Ray& ray, const rt::Sc
     temp /= 2;
     temp *= 255;
 
-    fm = std::make_shared<rt::FlatMaterial>(rt::RGBColor(temp[0], temp[1], temp[2]));
+    fm = std::make_shared<rt::FlatMaterial>(rt::RGBColor(temp[0], temp[1], temp[2], "rgb"));
 
     if(fm){
         L = fm->kd();
-    }
-    else{
-        L = rt::RGBColor(255, 0, 255);
     }
 
     return L;
