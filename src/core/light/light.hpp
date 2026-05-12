@@ -11,6 +11,9 @@ namespace rt{
 #include "scenes.hpp"
 #endif  //< SCENES_HPP
 
+#include "visibilityTester.hpp"
+
+
 namespace rt{
 
     enum class light_flag_e : std::uint8_t {
@@ -31,7 +34,7 @@ namespace rt{
             virtual ~Light() = default;
             Light(RGBColor intensity, RGBColor scale) : intensity(intensity), scale(scale){};
 
-            virtual rt::RGBColor sample_Li( const Surfel& hit, Vec3* wi  ) = 0;
+            virtual RGBColor sample_Li( const Surfel& hit, Vec3* wi, VisibilityTester* vis ) = 0;
 
             virtual void preprocess( const Scene & ) {};
 
