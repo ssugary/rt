@@ -103,9 +103,10 @@ void API::light_source(const ParamSet &ps){
   else if(type == "directional"){
     auto from = ps.retrieve<Point3>("from", {0, 0, 0});
     auto to = ps.retrieve<Vec3>("to", {0, 0, 0});
+    auto world_radius = ps.retrieve<double>("world_radius", 0);
 
     auto direction = to - from;
-    m_render_options->light_sources.push_back( std::make_shared<DirectionalLight>(direction, I, scale));
+    m_render_options->light_sources.push_back( std::make_shared<DirectionalLight>(direction, I, scale, world_radius));
   }
   else if (type == "ambient"){
     m_render_options->light_sources.push_back(std::make_shared<AmbientLight>(I, scale));
