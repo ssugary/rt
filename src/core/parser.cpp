@@ -324,6 +324,7 @@ std::unordered_map<string, vector<string>> tag_catalog{
         "specular",
         "glossiness",
         "color_map",
+        "mirror",
       }
      },
      {"object",
@@ -372,6 +373,7 @@ std::unordered_map<string, vector<string>> tag_catalog{
         "specular",
         "glossiness",
         "color_map",
+        "mirror",
       }
     },
     {
@@ -459,6 +461,7 @@ std::unordered_map<string, ConverterFunction> converters{
     {"radius", convert<double>},
     {"center", convert<Point3>},
     {"color_map", convert<double>},
+    {"mirror", convert<Vec3>},
 	// Integrator
 	  {"zmin", convert<double>},
 	  {"zmax", convert<double>},
@@ -477,6 +480,7 @@ std::unordered_map<string, ConverterFunction> converters{
     {"p3", convert<Point3>},
     {"mapping_interval", convert<double>},
     {"n_intervals", convert<int>},
+    {"depth", convert<int>},
     // Light attributes
     {"i", convert<RGBColor>},
     {"scale", convert<RGBColor>},
@@ -487,9 +491,7 @@ std::unordered_map<string, ConverterFunction> converters{
     {"diffuse", convert<Vec3>},
     {"specular", convert<Vec3>},
     {"glossiness", convert<double>},
-    {"depth", convert<double>},
-    {"world_radius", convert<double>},
-    
+    {"world_radius", convert<double>},  
 };
 
 /*!

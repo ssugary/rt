@@ -174,10 +174,12 @@ std::unique_ptr<Film> API::make_film(const ParamSet &ps) {
 std::unique_ptr<Integrator> API::make_integrator(const ParamSet &ps) {
   std::unique_ptr<Integrator> inter{nullptr};
   auto integrator_type = ps.retrieve<string>("type", "flat");
+  auto depth = ps.retrieve<int>("depth", 0);
+
   if (integrator_type == "flat") {
-    inter = std::make_unique<RayCastIntegrator>(m_render_options->camera);
+    inter = std::make_unique<RayCastIntegrator>(m_render_options->camera, depth);
   } else if (integrator_type == "normal_map") {
-    inter = std::make_unique<NormalMapIntegrator>(m_render_options->camera);
+    inter = std::make_unique<NormalMapIntegrator>(m_render_options->camera, depth);
   } else if (integrator_type == "depth_map") {
     auto near = ps.retrieve<RGBColor>("near_color", RGBColor(0, 0, 0));
     auto far = ps.retrieve<RGBColor>("far_color", RGBColor(255, 255, 255));
@@ -186,17 +188,16 @@ std::unique_ptr<Integrator> API::make_integrator(const ParamSet &ps) {
     auto zmax = ps.retrieve<double>("zmax", 1.0);
 
     inter = std::make_unique<DepthMapIntegrator>(m_render_options->camera,
-                                                 zmin, zmax, near, far);
+                                                 zmin, zmax, near, far, depth);
   } 
   else if(integrator_type == "blinn_phong"){
-    auto depth = ps.retrieve<double>("depth", 1.0f);
     inter = std::make_unique<BlinnPhongIntegrator>(m_render_options->camera, depth);
   }
   else if(integrator_type == "toon"){
     auto mapping_interval = ps.retrieve<std::vector<double>>("mapping_interval", {});
     auto n_intervals = ps.retrieve<int>("n_intervals", 0);
 
-    inter = std::make_unique<ToonIntegrator>(m_render_options->camera, mapping_interval, n_intervals);
+    inter = std::make_unique<ToonIntegrator>(m_render_options->camera, mapping_interval, n_intervals, depth);
   }
   else{
     WARNING(string{"Integrator \""} + integrator_type + string{"\" unknown."});
@@ -315,6 +316,8 @@ void API::camera(const ParamSet &ps) {
   void API::material(const ParamSet &ps) {
     check_in_world_block_state("API::material");
     auto type = ps.retrieve<std::string>("type", "unknown");
+    auto color_type = ps.retrieve<std::string>("color_type", "spectre");
+    auto mirror = ps.retrieve<RGBColor>("mirror", RGBColor(0, 0, 0, color_type));
     if (type == "unknown") {
       ERROR("API::material(): Missing \"type\" specification for the material.");
     }
@@ -322,7 +325,7 @@ void API::camera(const ParamSet &ps) {
     if(type == "flat"){
       auto color_type = ps.retrieve<std::string>("color_type", "rgb");
       auto color = RGBColor(ps.retrieve<RGBColor>("color", RGBColor()), color_type);
-      m_render_options->current_material =  std::make_shared<FlatMaterial>(color);
+      m_render_options->current_material =  std::make_shared<FlatMaterial>(color, mirror);
     }
     else if (type == "blinn"){
       auto color_type = ps.retrieve<std::string>("color_type", "spectre");
@@ -332,7 +335,7 @@ void API::camera(const ParamSet &ps) {
 
 
       auto glossiness = ps.retrieve<double>("glossiness", 0.0f);
-      m_render_options->current_material = std::make_shared<BlinnPhongMaterial>(diffuse, specular, ambient, glossiness);
+      m_render_options->current_material = std::make_shared<BlinnPhongMaterial>(diffuse, specular, ambient, glossiness, mirror);
     }
     else if (type == "toon"){
       auto color_map = ps.retrieve<std::vector<double>>("color_map", {});
@@ -343,7 +346,7 @@ void API::camera(const ParamSet &ps) {
         colors.push_back(RGBColor(color_map[i], color_map[i + 1], color_map[i + 2], color_type));
       }
 
-      m_render_options->current_material = std::make_shared<ToonMaterial>(colors);
+      m_render_options->current_material = std::make_shared<ToonMaterial>(colors, mirror);
     }
   }
 
@@ -416,6 +419,9 @@ void API::look_at(const ParamSet &ps) {
 void API::make_named_material(const ParamSet &ps) {
   check_in_world_block_state("API::make_named_material");
   auto type = ps.retrieve<string>("type", "unknown");
+  auto color_type = ps.retrieve<std::string>("color_type", "spectre");
+
+  auto mirror = RGBColor(ps.retrieve<Vec3>("mirror", Vec3()), color_type);
   if (type == "unknown") {
     ERROR("API::make_named_material(): Missing \"type\" specification for the "
           "material.");
@@ -430,7 +436,7 @@ void API::make_named_material(const ParamSet &ps) {
 
     auto color_type = ps.retrieve<std::string>("color_type", "rgb");
     auto color = RGBColor(ps.retrieve<RGBColor>("color", RGBColor()), color_type);
-    m_render_options->material_memory[material_id] =(std::shared_ptr<Material>(new FlatMaterial(color)));
+    m_render_options->material_memory[material_id] =(std::shared_ptr<Material>(new FlatMaterial(color, mirror)));
   }
   else if(type == "blinn"){
     auto color_type = ps.retrieve<std::string>("color_type", "spectre");
@@ -439,7 +445,7 @@ void API::make_named_material(const ParamSet &ps) {
     auto specular = RGBColor(ps.retrieve<Vec3>("specular", {0, 0, 0}), color_type);
     auto glossiness = ps.retrieve<double>("glossiness", 0.0f);
 
-    m_render_options->material_memory[material_id] = std::make_shared<BlinnPhongMaterial>(diffuse, specular, ambient, glossiness);
+    m_render_options->material_memory[material_id] = std::make_shared<BlinnPhongMaterial>(diffuse, specular, ambient, glossiness, mirror);
   }
   else if (type == "toon"){
       auto color_map = ps.retrieve<std::vector<double>>("color_map", {});
@@ -450,7 +456,7 @@ void API::make_named_material(const ParamSet &ps) {
         colors.push_back(RGBColor(color_map[i], color_map[i + 1], color_map[i + 2], color_type));
       }
 
-      m_render_options->material_memory[material_id] = std::make_shared<ToonMaterial>(colors);
+      m_render_options->material_memory[material_id] = std::make_shared<ToonMaterial>(colors, mirror);
     }
 }
 
