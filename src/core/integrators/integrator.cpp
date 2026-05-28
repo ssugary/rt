@@ -22,7 +22,7 @@ void SamplerIntegrator::render(const rt::Scene& scene){
     for (int i = 0; i < w; i++) {
         Ray ray = camera->generate_ray(i, j);
                 // Determine the incoming light.
-        auto temp_L =  Li( ray, scene );
+        auto temp_L =  Li( ray, scene, 0);
 
         auto u = float(i) / float(w);
         auto v = 1.0f - float(j) / float(h);

@@ -1,6 +1,6 @@
 #include "rayCastIntegrator.hpp"
 namespace rt{
-std::optional<rt::RGBColor> RayCastIntegrator::Li(const Ray& ray, const rt::Scene& scene) const {
+std::optional<rt::RGBColor> RayCastIntegrator::Li(const Ray& ray, const rt::Scene& scene, int depth) const {
 
     rt::RGBColor L(0,0,0); // The radiance
     // Find closest ray intersection or return background radiance.

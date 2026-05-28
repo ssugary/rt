@@ -7,7 +7,7 @@
 namespace rt {
 
 std::optional<rt::RGBColor>
-DepthMapIntegrator::Li(const Ray &ray, const rt::Scene &scene) const {
+DepthMapIntegrator::Li(const Ray &ray, const rt::Scene &scene, int depth) const {
   rt::Surfel isect;
 
   if (!scene.intersect(ray, &isect)) {
@@ -83,7 +83,7 @@ void DepthMapIntegrator::render(const rt::Scene &scene) {
     for (int i = 0; i < w; i++) {
       Ray ray = camera->generate_ray(i, j);
       // Determine the incoming light.
-      auto temp_L = Li(ray, scene);
+      auto temp_L = Li(ray, scene, 0);
 
       rt::RGBColor L = (temp_L.has_value()) ? temp_L.value() : m_far_color;
 

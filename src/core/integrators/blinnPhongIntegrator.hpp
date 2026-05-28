@@ -6,11 +6,9 @@
 
 namespace rt{
     class BlinnPhongIntegrator : public SamplerIntegrator {
-        private:
-            double depth;
         public:
-            BlinnPhongIntegrator(std::shared_ptr<rt::Camera> cam, double depth = 1.0) : SamplerIntegrator(cam), depth(depth){}
-            std::optional<rt::RGBColor> Li(const Ray& ray, const rt::Scene& scene) const override;
+            BlinnPhongIntegrator(std::shared_ptr<rt::Camera> cam, int max_depth) : SamplerIntegrator(cam, max_depth){}
+            std::optional<rt::RGBColor> Li(const Ray& ray, const rt::Scene& scene, int depth) const override;
     };
 
 }
