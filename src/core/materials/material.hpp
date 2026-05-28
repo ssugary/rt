@@ -12,9 +12,14 @@ using Vec3 = vec3<double>;
 
 namespace rt{
     class Material {
+        protected:
+            RGBColor mirror;
         public:
+            Material(RGBColor& mirror) : mirror(mirror) {};
             virtual ~Material() = default;
             virtual RGBColor kd() const = 0;
+            virtual RGBColor km() const = 0;        
+
             
     };
 }      //< namespace rt
@@ -27,11 +32,13 @@ namespace rt{
 namespace rt{
     class FlatMaterial : public Material{
         public:
-            FlatMaterial(RGBColor color) : color(color){};
+            FlatMaterial(RGBColor color, RGBColor mirror = RGBColor()) : Material(mirror), color(color){};
             FlatMaterial(Material &mat);
 
             RGBColor color;
-            RGBColor kd() const override {return color;}
+            RGBColor kd()    const override {return color;}
+            RGBColor km()const override {return mirror;};   
+
     };
 }       //< namespace rt
 #endif  //< FLAT_MATERIAL_HPP
