@@ -75,6 +75,8 @@ struct RGBColor {
   RGBColor operator*(const RGBColor& c) const{return RGBColor(red * c.red, green * c.green, blue * c.blue);};
   RGBColor operator+(const RGBColor& c)const {return RGBColor(red + c.red, green + c.green, blue + c.blue);};
   bool operator==(const RGBColor& c) const {return red == c.red && green == c.green && blue == c.blue;};
+  bool operator!=(const RGBColor& c) const {return !(*this == c);};
+
 
   double&    operator[](const size_t index){
     if(index == 0)return red;
