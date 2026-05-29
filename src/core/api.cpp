@@ -113,10 +113,18 @@ void API::light_source(const ParamSet &ps) {
 
     auto direction = to - from;
     m_render_options->light_sources.push_back( std::make_shared<DirectionalLight>(direction, I, scale, world_radius));
-  }
-  else if (type == "ambient"){
-    m_render_options->light_sources.push_back(std::make_shared<AmbientLight>(I, scale));
-  }
+  } else if (type == "spot"){
+
+    auto from = ps.retrieve<Point3>("from", {0, 0, 0});
+    auto to = ps.retrieve<Vec3>("to", {0, 0, 0});
+
+    auto direction = unit_vec(to - from);
+    
+    auto cutoff = ps.retrieve<double>("cutoff");
+    auto falloff = ps.retrieve<double>("falloff");
+    auto world_radius = ps.retrieve<int>("world_radius", 0);
+    auto attenuation = ps.retrieve<Vec3>("attenuation", {1, 0, 0});
+
 
     m_render_options->light_sources.push_back(
         std::make_shared<SpotLight>(from, direction, cutoff, falloff, world_radius, I, scale, attenuation)
@@ -195,11 +203,13 @@ std::unique_ptr<Integrator> API::make_integrator(const ParamSet &ps) {
 
     auto zmin = ps.retrieve<double>("zmin", 0.0);
     auto zmax = ps.retrieve<double>("zmax", 1.0);
+    
+    auto depth = ps.retrieve<int>("depth", 0);
 
     inter = std::make_unique<DepthMapIntegrator>(m_render_options->camera, zmin,
-                                                 zmax, near, far);
+                                                 zmax, near, far, depth);
   } else if (integrator_type == "blinn_phong") {
-    auto depth = ps.retrieve<double>("depth", 1.0f);
+    auto depth = ps.retrieve<int>("depth", 1);
     inter =
         std::make_unique<BlinnPhongIntegrator>(m_render_options->camera, depth);
   } else {
@@ -336,12 +346,23 @@ void API::material(const ParamSet &ps) {
     RGBColor ambient(ps.retrieve<RGBColor>("ambient", {0, 0, 0}), color_type);
     RGBColor diffuse(ps.retrieve<RGBColor>("diffuse", {0, 0, 0}), color_type);
     RGBColor specular(ps.retrieve<RGBColor>("specular", {0, 0, 0}), color_type);
-
+    RGBColor mirror(ps.retrieve<Vec3>("mirror", {0, 0, 0}), color_type);
     auto glossiness = ps.retrieve<double>("glossiness", 0.0f);
-    std::cout << "Criando Material Blinn - Difuso: " << diffuse.red << " "
-              << diffuse.green << " " << diffuse.blue << "\n";
+    
     m_render_options->current_material = std::make_shared<BlinnPhongMaterial>(
-        diffuse, specular, ambient, glossiness);
+        diffuse, specular, ambient, glossiness, mirror);
+  }
+  else if (type == "toon"){
+    auto color_map = ps.retrieve<std::vector<double>>("color_map", {});
+      auto color_type = ps.retrieve<std::string>("color_type", "rgb");
+      std::vector<RGBColor> colors;
+      RGBColor mirror(ps.retrieve<Vec3>("mirror", {0, 0, 0}), color_type);
+
+      for(size_t i{0}; i + 2 < color_map.size(); i += 3){
+        colors.push_back(RGBColor(color_map[i], color_map[i + 1], color_map[i + 2], color_type));
+      }
+
+      m_render_options->current_material = std::make_shared<ToonMaterial>(colors, mirror);
   }
 }
 
@@ -433,12 +454,10 @@ void API::make_named_material(const ParamSet &ps) {
     auto specular =
         RGBColor(ps.retrieve<Vec3>("specular", {0, 0, 0}), color_type);
     auto glossiness = ps.retrieve<double>("glossiness", 0.0f);
-    std::cout << "Criando Material Blinn - Difuso: " << diffuse.red << " "
-              << diffuse.green << " " << diffuse.blue << "\n";
-
+    
     m_render_options->material_memory[material_id] =
         std::make_shared<BlinnPhongMaterial>(diffuse, specular, ambient,
-                                             glossiness);
+                                             glossiness, mirror);
   }
   else if (type == "toon"){
       auto color_map = ps.retrieve<std::vector<double>>("color_map", {});

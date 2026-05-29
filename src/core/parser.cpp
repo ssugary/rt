@@ -496,7 +496,7 @@ std::unordered_map<string, ConverterFunction> converters{
     {"depth", convert<double>},
     {"cutoff", convert<double>},
     {"falloff", convert<double>},
-    {"world_radius", convert<int>},
+    {"world_radius", convert<double>},
 };
 
 /*!
