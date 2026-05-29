@@ -5,7 +5,9 @@
 #include <utility>
 
 #include "api.hpp"
+#include "common.hpp"
 #include "spot_light.hpp"
+#include "ssmath/vec3.hpp"
 
 namespace rt {
 
@@ -104,21 +106,22 @@ void API::light_source(const ParamSet &ps) {
     auto from = ps.retrieve<Point3>("from", {0, 0, 0});
     auto to = ps.retrieve<Vec3>("to", {0, 0, 0});
 
-    auto direction = to - from;
+    auto direction = unit_vec(to - from);
     m_render_options->light_sources.push_back(
         std::make_shared<DirectionalLight>(direction, I, scale));
   } else if (type == "spot") {
     auto from = ps.retrieve<Point3>("from", {0, 0, 0});
     auto to = ps.retrieve<Vec3>("to", {0, 0, 0});
 
-    auto direction = to - from;
+    auto direction = unit_vec(to - from);
 
     auto cutoff = ps.retrieve<double>("cutoff");
     auto falloff = ps.retrieve<double>("falloff");
     auto world_radius = ps.retrieve<int>("world_radius");
+    auto attenuation = ps.retrieve<Vec3>("attenuation", {1, 0, 0});
 
     m_render_options->light_sources.push_back(
-        std::make_shared<SpotLight>(direction, cutoff, falloff, world_radius, I, scale)
+        std::make_shared<SpotLight>(from, direction, cutoff, falloff, world_radius, I, scale, attenuation)
 	);
   } else if (type == "ambient") {
     m_render_options->light_sources.push_back(
