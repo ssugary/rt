@@ -1,6 +1,13 @@
 #include "primitive.hpp"
+#include "error.hpp"
 
 namespace rt{
+
+const std::shared_ptr<Material> AggregatePrimitive::get_material() const {
+	WARNING("AggregatePrimitive must not have a material");
+	return nullptr;
+}
+
 void PrimitiveList::add(std::shared_ptr<Primitive> object) {
     primitives.push_back(object);
 }
