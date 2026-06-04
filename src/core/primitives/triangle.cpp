@@ -2,12 +2,10 @@
 
 namespace rt {
     
-    Triangle::Triangle(Point3 p0, Point3 p1, Point3 p2, std::shared_ptr<Material> mat)
-    : p0(p0), p1(p1), p2(p2) {
-      this->material = mat;
-    }
+    Triangle::Triangle(bool flip, Point3 p0, Point3 p1, Point3 p2)
+    : Shape(flip), p0(p0), p1(p1), p2(p2) {};
 
-bool Triangle::intersect(const Ray &r, Surfel *sf) const {
+bool Triangle::intersect(const Ray &r, float* t_hit, Surfel *sf) const {
   Vec3 o = r.getOrigin() - this->p0; //< Vector (o - v0)
   Vec3 d = r.getDirection();         //< Ray direction
   Vec3 v20 = this->p2 - this->p0;    //< Vector (v2 - v0)
@@ -39,6 +37,8 @@ bool Triangle::intersect(const Ray &r, Surfel *sf) const {
     return false;
   }
 
+  if(t_hit) *t_hit = t;
+
   if (sf) {
     sf->time = t;
     sf->p = r(t);
@@ -51,9 +51,7 @@ bool Triangle::intersect(const Ray &r, Surfel *sf) const {
 
     sf->wo = -r.getDirection();
     sf->uv = {U, V};
-    sf->primitive = this;
   }
-  r.setTMax(t);
 
   return true;
 }

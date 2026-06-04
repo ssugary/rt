@@ -33,4 +33,26 @@ bool PrimitiveList::intersect_p(const Ray& ray) const  {
         }
     }
     return false;
-}}
+}
+
+bool GeometricPrimitive::intersect(const Ray &r, Surfel *sf) const {
+    float t_hit;
+    if (shape->intersect(r, &t_hit, sf)) {
+        r.setTMax(t_hit); 
+        if (sf) {
+            sf->primitive = this; 
+        }
+        return true;
+    }
+    return false;
+}
+
+bool GeometricPrimitive::intersect_p(const Ray &r) const {
+    return shape->intersect_p(r);
+}
+
+Bounds3f GeometricPrimitive::world_bounds() const {
+    return shape->world_bounds();
+}
+
+}

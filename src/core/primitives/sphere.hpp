@@ -11,10 +11,12 @@ private:
   double radius{0};
 
 public:
-  Sphere(Point3 center, float radius, std::shared_ptr<Material> mat);
+  Sphere(bool flip, Point3 center, float radius)
+        : Shape(flip), center(center), radius(radius) {};
 
   bool intersect(const Ray &r, float *t_hit, Surfel *sf) const override;
   bool intersect_p(const Ray &r) const override;
+  Bounds3f world_bounds() const override {};
 };
 } // namespace rt
 #endif

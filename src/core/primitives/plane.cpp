@@ -1,15 +1,12 @@
 
 #include "plane.hpp"
+#include "shape.hpp"
 #include <cstdlib>
 
 namespace rt{
 
-        Plane::Plane(Point3 p, Vec3 n, std::shared_ptr<Material> mat)
-            : p(p), n(n) {
-            this->material = mat;
-        }
 
-        bool Plane::intersect(const Ray &r, Surfel *sf) const {
+        bool Plane::intersect(const Ray &r, float* t_hit, Surfel *sf) const {
              double dn = dot(r.getDirection(), n);
 
             if(std::abs(dn) < epsilon){
@@ -26,17 +23,18 @@ namespace rt{
                 return false;
             }
 
+            if(t_hit) *t_hit = t;
+
+
             if(sf){
                 sf->time = t;
                 sf->n = this->n;
                 
-                if(dn > 0)sf->n = -this->n;
+                if(flips_normal || dn > 0) sf->n = -this->n;
 
                 sf->p = r(t);
                 sf->wo = -r.getDirection();
-                sf->primitive = this;
             }
-            r.setTMax(t);
 
             return true;
         }
