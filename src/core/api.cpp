@@ -11,6 +11,7 @@
 #include "scenes.hpp"
 #include "toonIntegrator.hpp"
 #include "toon_material.hpp"
+#include "triangle.hpp"
 
 
 namespace rt {
@@ -155,7 +156,7 @@ void API::background(const ParamSet &ps) {
         "API::background(): Missing \"type\" specificaton for the background.");
   }
   std::shared_ptr<Background> bkg{nullptr};
-  if (type == "single_color" or type == "4_colors") {
+  if (type == "single_color" or type == "4_colors" or type == "colors") {
     bkg = create_color_background(type, ps);
   } else {
     WARNING(std::string{"API::background(): unknown background type \""} +
@@ -382,12 +383,20 @@ void API::object(const ParamSet &ps) {
     auto sphere = std::make_shared<Sphere>(flip, center, radius);
     m_render_options->elements.push_back(std::make_shared<GeometricPrimitive>(sphere, m_render_options->current_material));
   } else if (type == "triangle") {
-    Point3 p0 = ps.retrieve<Point3>("p0", Point3(-1, 0, 0));
-    Point3 p1 = ps.retrieve<Point3>("p1", Point3(1, 0, 0));
-    Point3 p2 = ps.retrieve<Point3>("p2", Point3(0, 1, 0));
-    auto triangle = std::make_shared<Triangle>(
-       flip, p0, p1, p2);
-    m_render_options->elements.push_back(std::make_shared<GeometricPrimitive>(triangle, m_render_options->current_material));
+    // Point3 p0 = ps.retrieve<Point3>("p0", Point3(-1, 0, 0));
+    // Point3 p1 = ps.retrieve<Point3>("p1", Point3(1, 0, 0));
+    // Point3 p2 = ps.retrieve<Point3>("p2", Point3(0, 1, 0));
+    // auto triangle = std::make_shared<Triangle>(
+    //    flip, p0, p1, p2);
+    // m_render_options->elements.push_back(std::make_shared<GeometricPrimitive>(triangle, m_render_options->current_material));
+  } else if (type == "trianglemesh"){
+    auto triangles = rt::create_triangle_mesh_shape(flip, ps);
+    for(const auto& shape : triangles){
+      auto primitive = std::make_shared<GeometricPrimitive>(shape, m_render_options->current_material);
+      m_render_options->elements.push_back(primitive);
+    }
+    std::cout << ">>> " << triangles.size() << " triângulos carregados e adicionados à cena!\n";
+
   } else if (type == "plane") {
     Point3 p = ps.retrieve<Point3>("point", Point3(0, 0, 0));
     Vec3 n = ps.retrieve<Vec3>("normal", Vec3(0, 1, 0));
