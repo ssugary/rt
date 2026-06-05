@@ -30,10 +30,14 @@ namespace rt{
                 sf->time = t;
                 sf->n = this->n;
                 
-                if(flips_normal || dn > 0) sf->n = -this->n;
+                if(flips_normal) sf->n = -this->n;
 
                 sf->p = r(t);
                 sf->wo = -r.getDirection();
+                
+                if (dot(r.getDirection(), sf->n) > 0) {
+                    sf->n = -sf->n;
+                }
             }
 
             return true;

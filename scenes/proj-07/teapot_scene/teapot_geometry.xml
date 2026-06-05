@@ -24,6 +24,6 @@
                 indices="0 1 2   0 2 3"
                 normals ="0 0 1  0 0 1  0 0 1  0 0 1 "
                 reverse_vertex_order="false"
-                backface_cull ="off"/>
+                backface_cull ="true"/>
     <world_end/>
 </RT3>

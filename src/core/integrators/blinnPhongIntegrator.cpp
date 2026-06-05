@@ -17,7 +17,7 @@ namespace rt {
             return std::nullopt;
         }
         if (dot(ray.getDirection(), isect.n) > 0) {
-           return std::nullopt;
+           isect.n = -isect.n;
         }
 
         std::shared_ptr<BlinnPhongMaterial> fm{nullptr};
@@ -70,7 +70,7 @@ namespace rt {
         }
 
     
-        if(depth < max_depth && (km.red > 0.01 || km.green > 0.01 || km.blue > 0.01)){
+        if(depth < max_depth){
             auto rd = n * 2 * dot(n, v) - v;
             rd.mk_unit_vec();
 

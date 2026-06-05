@@ -40,7 +40,7 @@
             normals ="0 1 0"
             normal_indices ="0 0 0"
             reverse_vertex_order="false"
-            backface_cull_on ="false"/>
+            backface_cull ="false"/>
 
         <named_material name="salmon"/>
         <object type="trianglemesh"
@@ -50,7 +50,7 @@
             normals ="0 1 0"
             normal_indices ="0 0 0"
             reverse_vertex_order="false"
-            backface_cull_on ="true"/>
+            backface_cull ="true"/>
 
    <world_end/>
 </RT3>
