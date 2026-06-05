@@ -50,10 +50,11 @@ template <typename T>
               * @details Os elementos seguem a ordem de linha (Row-Major), onde o primeiro 
               *          dígito indica a linha e o segundo a coluna (ex: e12 é linha 1, coluna 2).
               */
-            constexpr mat4(T e00, T e01, T e02, T e03,
-                 T e10, T e11, T e12, T e13,
-                 T e20, T e21, T e22, T e23,
-                 T e30, T e31, T e32, T e33) : mat{e00, e01, e02, e03, e10, e11, e12, e13, e20, e21, e22, e23, e30, e31, e32, e33}{};
+            constexpr mat4(const T& e00, const T& e01, const T& e02, const T& e03,
+                           const T& e10, const T& e11, const T& e12, const T& e13,
+                           const T& e20, const T& e21, const T& e22, const T& e23,
+                           const T& e30, const T& e31, const T& e32, const T& e33)
+                  : mat{e00, e01, e02, e03, e10, e11, e12, e13, e20, e21, e22, e23, e30, e31, e32, e33}{};
 
             /**
               * @brief Constrói uma matriz 4x4 a partir de outra matriz 4x4.
@@ -69,7 +70,7 @@ template <typename T>
               * @details Os elementos seguem a ordem de linha (Row-Major), onde o primeiro 
               *          dígito indica a linha e o segundo a coluna (ex: e12 é linha 1, coluna 2).
               */
-            constexpr mat4(std::initializer_list<T> list){
+            constexpr mat4(const std::initializer_list<T>& list){
                 mat.fill(static_cast<T>(0)); 
                 size_t count = std::min(static_cast<size_t>(16), list.size());
                 std::copy(list.begin(), list.begin() + count, mat.begin());
@@ -90,7 +91,7 @@ template <typename T>
               * @return Retorna o elemento que está na posição indicada pelos parâmetros 
               *         (ex: (1, 2) retorna o elemento e12) 
               */
-            constexpr T& operator()(size_t row, size_t col){return mat[4 * row + col];};
+            constexpr T& operator()(const size_t& row, const size_t& col){return mat[4 * row + col];};
 
             /**
               * @brief Operador de acesso constante aos elementos da matriz
@@ -99,7 +100,7 @@ template <typename T>
               * @return Retorna o elemento de que está na posição indicada pelos parâmetros 
               *         (ex: (1, 2) retorna o elemento e12) 
               */
-            constexpr T operator()(size_t row, size_t col) const{return mat[4 * row + col];};
+            constexpr T operator()(const size_t& row, const size_t& col) const{return mat[4 * row + col];};
 
             /**
               * @brief Soma duas matrizes termo a termo.
@@ -172,7 +173,7 @@ template <typename T>
               * @param t Constante que está multiplicando a matriz.
               * @return mat4<T> A nova matriz resultante.
               */
-            constexpr mat4 operator*(const T t ) const {return mat4(mat[0] * t, mat[1] * t, mat[2] * t,
+            constexpr mat4 operator*(const T& t ) const {return mat4(mat[0] * t, mat[1] * t, mat[2] * t,
                                                                 mat[3] * t, mat[4] * t, mat[5] * t,
                                                                 mat[6] * t, mat[7] * t, mat[8] * t, mat[9] * t, mat[10] * t,
                                                                 mat[11] * t, mat[12] * t, mat[13] * t, mat[14] * t, mat[15] * t);};
@@ -182,7 +183,7 @@ template <typename T>
               * @param t Constante que está dividindo a matriz.
               * @return mat4<T> A nova matriz resultante.
               */
-            constexpr mat4 operator/(const T t ) const{return mat4(mat[0] / t, mat[1] / t, mat[2] / t,
+            constexpr mat4 operator/(const T& t ) const{return mat4(mat[0] / t, mat[1] / t, mat[2] / t,
                                                                 mat[3] / t, mat[4] / t, mat[5] / t,
                                                                 mat[6] / t, mat[7] / t, mat[8] / t, mat[9] / t, mat[10] / t,
                                                                 mat[11] / t, mat[12] / t, mat[13] / t, mat[14] / t, mat[15] / t);};
@@ -238,7 +239,7 @@ template <typename T>
               * @param t Escalar que irá multiplicar a matriz.
               * @return mat4<T> A matriz atual após a multiplicação.
               */
-            constexpr mat4& operator*=(const T t){
+            constexpr mat4& operator*=(const T& t){
                 for(size_t i{0}; i < 16; i++){
                     mat[i] *= t;
                 }
@@ -250,7 +251,7 @@ template <typename T>
               * @param v Vetor que irá ser multiplicado pela matriz.
               * @return vec4<T> Vetor obtido após a multiplicação.
               */
-            constexpr mat4& operator/=(const T t){
+            constexpr mat4& operator/=(const T& t){
                 for(size_t i{0}; i < 16; i++){
                     mat[i] /= t;
                 }
