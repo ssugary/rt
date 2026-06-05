@@ -1,12 +1,13 @@
 #ifndef TRIANGLE_HPP
 #define TRIANGLE_HPP
 
+#include "tinyobj/tiny_obj_loader.h"
 #include "paramset.hpp"
 #include "primitive.hpp"
-#include "tinyobj/tiny_obj_loader.h"
+#include "shape.hpp"
 #include <memory>
 #include <ostream>
-
+#include "chrono"
 namespace rt {
 
     struct TriangleMesh {
@@ -30,7 +31,7 @@ namespace rt {
 
     };
 
-    class Triangle : public Primitive{
+    class Triangle : public Shape {
         private:
             int* v;
             int* n;
@@ -40,24 +41,22 @@ namespace rt {
             std::shared_ptr<TriangleMesh> mesh;
         public:
             
-            Triangle(std::shared_ptr<TriangleMesh> mesh, int tri_id, bool bfc = true)
-                : backface_cull{ bfc }, mesh{ mesh } {
+            Triangle(bool flip, std::shared_ptr<TriangleMesh> mesh, int tri_id, bool bfc = true)
+                :Shape(flip), backface_cull{ bfc }, mesh{ mesh } {
      
                 v = &mesh->vertex_indices[3 * tri_id];
                 n = &mesh->normal_indices[3 * tri_id];
                 uv = &mesh->uvcoord_indices[3 * tri_id];
             }
 
-
-
-            bool intersect(const Ray &r, Surfel *sf) const override;
+            bool intersect(const Ray &r, float* t_hit, Surfel *sf) const override;
             bool intersect_p(const Ray &r) const override;
-            // Bounds3f object_bound() const;
+            Bounds3f world_bounds() const override;
             friend std::ostream& operator<<(std::ostream& os, const Triangle& t);
     };
 
-    std::vector<std::shared_ptr<Primitive /*Shape*/>> create_triangle_mesh_shape(bool flip_normals, const ParamSet& ps);
-    std::vector<std::shared_ptr<Primitive /*Shape*/>> create_triangle_mesh(std::shared_ptr<TriangleMesh>, bool);
+    std::vector<std::shared_ptr<Shape>> create_triangle_mesh_shape(bool flip_normals, const ParamSet& ps);
+    std::vector<std::shared_ptr<Shape>> create_triangle_mesh(std::shared_ptr<TriangleMesh>, bool, bool);
 
     bool load_mesh_data(const std::string& filename,
                     bool rvo,
