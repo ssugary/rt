@@ -1,6 +1,5 @@
 #include "integrator.hpp"
 
-
 namespace rt{
 void SamplerIntegrator::render(const rt::Scene& scene){
       // Perform objects initialization here.
@@ -18,6 +17,9 @@ void SamplerIntegrator::render(const rt::Scene& scene){
 
   // -------------------------------------------------------------
   // Traverse all pixels to shoot rays from.
+  
+  #pragma omp parallel for schedule(dynamic, 1) collapse(2)
+
   for (int j = 0; j < h; j++) {
     for (int i = 0; i < w; i++) {
         Ray ray = camera->generate_ray(i, j);
