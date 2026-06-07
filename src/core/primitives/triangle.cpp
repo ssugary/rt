@@ -135,7 +135,7 @@ namespace rt {
     return true;
   };
   
-  Bounds3f Triangle::world_bounds() const {
+  bool Triangle::box(Bounds3f &box) const {
     // Buscar coordenadas na malha
     Point3 p0 = mesh->vertices[v[0]];
     Point3 p1 = mesh->vertices[v[1]];
@@ -153,7 +153,8 @@ namespace rt {
         ffmax(p0.z(), ffmax(p1.z(), p2.z()))
     );
 
-    return Bounds3f(p_min, p_max);
+	box = Bounds3f(p_min, p_max);
+    return true;
 }
 
   std::vector<std::shared_ptr<Shape>> create_triangle_mesh_shape(bool flip_normals, const ParamSet& ps){

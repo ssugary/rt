@@ -51,7 +51,7 @@ namespace rt {
 
             bool intersect(const Ray &r, float* t_hit, Surfel *sf) const override;
             bool intersect_p(const Ray &r) const override;
-            Bounds3f world_bounds() const override;
+            bool box(Bounds3f &box) const override;
             friend std::ostream& operator<<(std::ostream& os, const Triangle& t);
     };
 

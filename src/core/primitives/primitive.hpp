@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include "fbounds.hpp"
 #include "material.hpp"
 #include "ray.hpp"
 
@@ -14,13 +13,15 @@ class Primitive;
 #include "surfel.hpp"
 #endif //< SURFEL_HPP
 
+#include "fbounds.hpp"
+
 namespace rt {
 constexpr float epsilon = std::numeric_limits<float>::epsilon();
 class Primitive {
 
 public:
   virtual ~Primitive() = default;
-  virtual Bounds3f world_bounds() const = 0;
+  virtual bool box(Bounds3f &box) const = 0;
   virtual bool intersect(const Ray &r, Surfel *sf) const = 0;
   virtual bool intersect_p(const Ray &r) const = 0;
   virtual const std::shared_ptr<Material> get_material() const = 0;
@@ -53,19 +54,67 @@ private:
   std::vector<std::shared_ptr<Primitive>> primitives;
 
 public:
+  enum AXIS { X = 0, Y, Z };
 
   PrimitiveList() = default; // Construtor padrão
-  PrimitiveList(std::vector<std::shared_ptr<Primitive>> prim) : primitives(prim) {}
+  PrimitiveList(std::vector<std::shared_ptr<Primitive>> prim)
+      : primitives(prim) {}
 
-  void add(const std::shared_ptr<Primitive>& primitive);
+  void add(const std::shared_ptr<Primitive> &primitive);
   bool intersect(const Ray &ray, Surfel *isect) const override;
   bool intersect_p(const Ray &ray) const override;
-  Bounds3f world_bounds() const override {};
-
+  bool box(Bounds3f &box) const override {};
 };
 } // namespace rt
 
 #endif //< PRIMITIVE_LIST_HPP
+
+#ifndef BVH_ACCEL_HPP
+#define BVH_ACCEL_HPP
+
+namespace rt {
+
+struct BVHNode {
+  Bounds3f bounds;
+
+  std::unique_ptr<BVHNode> left = nullptr;
+  std::unique_ptr<BVHNode> right = nullptr;
+
+  std::vector<std::shared_ptr<Primitive>> primitives;
+
+  bool is_leaf() const { return left == nullptr && right == nullptr; }
+};
+
+class BVHAccel : public AggregatePrimitive {
+private:
+  std::unique_ptr<BVHNode> root = nullptr;
+
+  std::unique_ptr<BVHNode> create_bvh(std::vector<std::shared_ptr<Primitive>> &prims);
+
+  bool intersect_node(const BVHNode *node, const Ray &ray, Surfel *isect) const;
+
+  bool intersect_p_node(const BVHNode *node, const Ray &ray) const;
+
+  void destroy(BVHNode *node);
+
+public:
+  BVHAccel(const std::vector<std::shared_ptr<Primitive>> &prims) {
+    auto dummy = prims;
+    root = create_bvh(dummy);
+  }
+
+  ~BVHAccel();
+
+  bool intersect(const Ray &ray, Surfel *isect) const override;
+
+  bool intersect_p(const Ray &ray) const override;
+
+  bool box(Bounds3f &box) const override;
+};
+
+} // namespace rt
+
+#endif //< BVH_ACCEL_HPP
 
 #ifndef GEOMETRIC_PRIMITIVE_HPP
 #define GEOMETRIC_PRIMITIVE_HPP
@@ -79,17 +128,19 @@ class GeometricPrimitive : public Primitive {
 private:
   std::shared_ptr<Shape> shape;
   std::shared_ptr<Material> material;
-public:
 
+public:
   GeometricPrimitive(std::shared_ptr<Shape> shape,
                      std::shared_ptr<Material> material)
       : shape(shape), material(material) {};
 
   bool intersect(const Ray &r, Surfel *sf) const override;
   bool intersect_p(const Ray &r) const override;
-  void set_material(const std::shared_ptr<Material>& m) { material = m; };
-  const std::shared_ptr<Material> get_material() const override { return material; }
-  Bounds3f world_bounds() const override;
+  void set_material(const std::shared_ptr<Material> &m) { material = m; };
+  const std::shared_ptr<Material> get_material() const override {
+    return material;
+  }
+  bool box(Bounds3f &box) const override;
 };
 } // namespace rt
 #endif //< GEOMETRIC_PRIMITIVE_HPP

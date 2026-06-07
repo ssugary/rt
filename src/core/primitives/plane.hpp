@@ -13,7 +13,8 @@ namespace rt{
         Plane(bool flip, Point3 p, Vec3 n): Shape(flip), p(p), n(n) {};
         bool intersect(const Ray &r, float* t_hit, Surfel *sf) const override;
         bool intersect_p(const Ray &r) const override;
-        Bounds3f world_bounds() const override {};
+
+  bool box(Bounds3f &box) const override;
     };
 }
 

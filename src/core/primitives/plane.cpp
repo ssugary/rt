@@ -5,6 +5,7 @@
 
 namespace rt{
 
+  bool Plane::box(Bounds3f &box) const {return false;};
 
         bool Plane::intersect(const Ray &r, float* t_hit, Surfel *sf) const {
              double dn = dot(r.getDirection(), n);

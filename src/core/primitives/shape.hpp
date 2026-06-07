@@ -19,7 +19,7 @@ protected:
 public:
   Shape(bool flip) : flips_normal(flip) {};
 
-  virtual Bounds3f world_bounds() const = 0;
+  virtual bool box(Bounds3f &box) const = 0;
   virtual bool intersect(const Ray &r, float *t_hit, Surfel *sf) const = 0;
   virtual bool intersect_p(const Ray &r) const = 0;
 };

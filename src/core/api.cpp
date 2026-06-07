@@ -243,7 +243,6 @@ void API::world_end(const ParamSet &ps) {
   // ===============================================================
   // For now, we create the film here but in the future it will be
   // instantiated somewhere else.
-  // TODO: finish
 
   auto primitive_list = std::make_shared<PrimitiveList>();
   for (auto &obj : m_render_options->elements) {

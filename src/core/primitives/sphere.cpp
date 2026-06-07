@@ -1,4 +1,6 @@
 #include "sphere.hpp"
+#include "common.hpp"
+#include "fbounds.hpp"
 
 namespace rt{
 
@@ -48,6 +50,12 @@ bool Sphere::intersect(const Ray &r, float *t_hit, Surfel *sf) const {
 
   return true;
 }
+
+bool Sphere::box(Bounds3f &box) const {
+	Vec3 r_vec =Vec3(radius, radius, radius);
+	box = Bounds3f(center - r_vec, center + r_vec);
+	return true;
+};
 
 bool Sphere::intersect_p(const Ray &r) const {
   Point3 oc = r.getOrigin() - center;
