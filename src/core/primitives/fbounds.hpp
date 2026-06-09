@@ -65,6 +65,10 @@ public:
   const Point3 &min() const { return pmin; }
   const Point3 &max() const { return pmax; }
 
+  void print() {
+    cout << "pmin: " << pmin << " | " << "pmax: " << pmax << "\n";
+  }
+
   Point3 centroid() const { return (pmin + pmax) * 0.5; }
 
   Bounds3f merge(const Bounds3f &b) const {
