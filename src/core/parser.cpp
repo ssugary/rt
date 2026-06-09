@@ -431,7 +431,7 @@ std::unordered_map<string, std::function<void(const ParamSet &)>> api_functions{
     {"material", API::material},     {"object", API::object},
     {"integrator", API::integrator}, {"make_named_material", API::make_named_material},
     {"named_material", API::named_material}, {"light_source", API::light_source},
-      /*TODO: {"aggregator", API::agregator}*/
+    {"aggregator", API::aggregator},
 };
 
 /// Maps convertion function to an attribute name.

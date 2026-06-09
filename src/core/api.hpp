@@ -5,6 +5,8 @@
 #include <unordered_map>
 
 
+#include "paramset.hpp"
+#include "primitive.hpp"
 #include "scenes.hpp"
 #include "background.hpp"
 #include "error.hpp"
@@ -22,7 +24,8 @@ struct RenderOptions {
   std::shared_ptr<Background> background;
   std::shared_ptr<Camera> camera;
   std::unique_ptr<Integrator> integrator;
-  std::unique_ptr<rt::Scene> scene;
+  std::unique_ptr<Scene> scene;
+  AggregateType aggregator;
 
   std::vector<std::shared_ptr<Light>> light_sources;
   std::vector<std::shared_ptr<Primitive>> elements;
@@ -71,6 +74,8 @@ public:
   static void make_named_material(const ParamSet &ps);
   static void named_material(const ParamSet &ps);
   static void light_source(const ParamSet& ps);
+  static void aggregator(const ParamSet& ps);
+
 
   // Methods that create the objects based on paramset's data
   static std::unique_ptr<Camera> make_camera(const ParamSet &camera,

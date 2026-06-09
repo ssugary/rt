@@ -10,6 +10,12 @@ class Shape;
 #include "surfel.hpp"
 #endif //< SURFEL_HPP
 
+#ifndef FLOAT_BOUND_HPP
+namespace rt {
+class Bounds3f;
+}
+#endif //< FLOAT_BOUND_HPP
+
 namespace rt {
 
 class Shape {

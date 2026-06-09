@@ -1,9 +1,16 @@
+#ifndef PRIMITIVE_HPP
+namespace rt {
+class Bounds3f;
+}
+#include "primitive.hpp"
+#endif
+
 #ifndef FLOAT_BOUND_HPP
 #define FLOAT_BOUND_HPP
 
 #include "common.hpp"
-#include "primitive.hpp"
 #include "ray.hpp"
+#include <limits>
 #include <memory>
 
 namespace rt {
@@ -17,7 +24,12 @@ private:
   Point3 pmax;
 
 public:
-  Bounds3f();
+  Bounds3f() {
+    float inf = std::numeric_limits<float>::infinity();
+
+    pmin = Point3(inf, inf, inf);
+    pmax = Point3(-inf, -inf, -inf);
+  }
   Bounds3f(const Point3 &p1, const Point3 &p2) {
     pmin = {std::min(p1.x(), p2.x()), std::min(p1.y(), p2.y()),
             std::min(p1.z(), p2.z())};
@@ -26,15 +38,27 @@ public:
   };
 
   Bounds3f(std::vector<std::shared_ptr<Primitive>> &prims) {
-    Point3 p_min;
-    Point3 p_max;
-    // for (const auto p : prims) {
-    //   Bounds3f b;
-    //   if (p->box(b)) {
-    //     if (b.pmin < p_min) {
-    //     }
-    //   }
-    // }
+    std::numeric_limits<float>::infinity();
+
+    Point3 p_min = Point3(std::numeric_limits<float>::infinity(),
+                          std::numeric_limits<float>::infinity(),
+                          std::numeric_limits<float>::infinity());
+    Point3 p_max = Point3(-std::numeric_limits<float>::infinity(),
+                          -std::numeric_limits<float>::infinity(),
+                          -std::numeric_limits<float>::infinity());
+    for (auto p : prims) {
+      Bounds3f b;
+      if (p->box(b)) {
+        p_min = Point3(std::min(p_min.x(), b.pmin.x()),
+                       std::min(p_min.y(), b.pmin.y()),
+                       std::min(p_min.z(), b.pmin.z()));
+        p_max = Point3(std::max(p_max.x(), b.pmax.x()),
+                       std::max(p_max.y(), b.pmax.y()),
+                       std::max(p_max.z(), b.pmax.z()));
+      }
+    }
+    pmin = p_min;
+    pmax = p_max;
   };
 
   // Getters

@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "api.hpp"
+#include "bvh_accel.hpp"
 #include "common.hpp"
 #include "spot_light.hpp"
 #include "ssmath/vec3.hpp"
@@ -249,9 +250,17 @@ void API::world_end(const ParamSet &ps) {
     primitive_list->add(obj);
   }
 
-  auto scene =
-      std::make_unique<Scene>(primitive_list, m_render_options->background,
-                              m_render_options->light_sources);
+  std::unique_ptr<Scene> scene = nullptr;
+
+  switch (m_render_options->aggregator) {
+	  case LIST:
+		scene = std::make_unique<Scene>(primitive_list, m_render_options->background, m_render_options->light_sources);
+		  break;
+	  case BVH:
+		auto bvh = std::make_shared<BVHAccel>(primitive_list->get_primitives());
+   		scene = std::make_unique<Scene>(bvh, m_render_options->background, m_render_options->light_sources);
+		  break;
+  }
 
   std::unique_ptr<Film> film =
       make_film(m_render_options->setup_params["film"]);
@@ -458,6 +467,16 @@ void API::make_named_material(const ParamSet &ps) {
 
       m_render_options->material_memory[material_id] = std::make_shared<ToonMaterial>(colors, mirror);
     }
+}
+
+void API::aggregator(const ParamSet &ps) {
+      auto type = ps.retrieve<std::string>("type", {});
+
+	  if(type == "list") {
+		  m_render_options->aggregator = AggregateType::LIST;
+	  } else if(type == "bvh") {
+		  m_render_options->aggregator = AggregateType::BVH;
+	  }
 }
 
 void API::named_material(const ParamSet &ps) {
