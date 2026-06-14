@@ -19,6 +19,8 @@ namespace rt {
 
         *wi = unit_vec(dir);
 
+        // No construtor ou num método de inicialização:
+
         Degrees angle = std::acos(dot(-(*wi), spot_axis)) * (180.0 / M_PI);
 
         double spot = 1.0;

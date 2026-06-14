@@ -10,7 +10,7 @@
 #include "api.hpp"
 #include "parser.hpp"
 
-void print(vector<string> v) {
+void print(const vector<string>& v) {
   for (auto s : v) {
     cout << s << endl;
   }
@@ -330,25 +330,32 @@ std::unordered_map<string, vector<string>> tag_catalog{
      {"object",
       {
         "type",
+                      /// Sphere
         "radius",
         "center",
-        "size",
-        "height",
-        "base_size",
-        "r_inner",
-        "r_outer",
+                      /// Plane
         "point",
         "normal",
-        "p0",
-        "p1",
-        "p2",
-        "p3",
+                      /// TriangleMesh
+        "indices",
+        "ntriangles",
+        "vertices",
+        "vertex_indices",
+        "normals",
+        "normal_indices",
+        "uvs",
+        "uv_indices",
+        "reverse_vertex_order",
+        "compute_normals",
+        "backface_cull",
+        "filename",
       }
     },
     {
       "aggregator", 
       {
         "type",
+		"max_prims_per_node",
       }
     },
     {
@@ -425,7 +432,7 @@ std::unordered_map<string, std::function<void(const ParamSet &)>> api_functions{
     {"material", API::material},     {"object", API::object},
     {"integrator", API::integrator}, {"make_named_material", API::make_named_material},
     {"named_material", API::named_material}, {"light_source", API::light_source},
-      /*TODO: {"aggregator", API::agregator}*/
+    {"aggregator", API::aggregator},
 };
 
 /// Maps convertion function to an attribute name.
@@ -459,27 +466,33 @@ std::unordered_map<string, ConverterFunction> converters{
     {"filename", convert<string>},
     {"img_type", convert<string>},
     {"gamma_corrected", convert<bool>},
+    // Material attributes
+    {"color_map", convert<double>},
+    {"mirror", convert<Vec3>},
     // Object attributes
     {"radius", convert<double>},
     {"center", convert<Point3>},
-    {"color_map", convert<double>},
-    {"mirror", convert<Vec3>},
-	// Integrator
+    
+    {"point", convert<Point3>},
+    {"normal", convert<Vec3>},
+
+    {"indices", convert<int>},
+    {"ntriangles", convert<int>},
+    {"vertices", convert<Point3>},
+    {"vertex_indices", convert<int>},
+    {"normals", convert<Vec3>},
+    {"normal_indices", convert<int>},
+    {"uvs", convert<Point2>},
+    {"uv_indices", convert<int>},
+    {"reverse_vertex_order", convert<string>},
+    {"compute_normals", convert<string>},
+    {"backface_cull", convert<string>},
+	  // Integrator
 	  {"zmin", convert<double>},
 	  {"zmax", convert<double>},
     {"near_color", convert<RGBColor>},
     {"far_color", convert<RGBColor>},
-    {"size", convert<double>},
-    {"height", convert<double>},
-    {"base_size", convert<double>},
-    {"r_inner", convert<double>},
-    {"r_outer", convert<double>},
-    {"point", convert<Point3>},
-    {"normal", convert<Vec3>},
-    {"p0", convert<Point3>},
-    {"p1", convert<Point3>},
-    {"p2", convert<Point3>},
-    {"p3", convert<Point3>},
+    
     {"mapping_interval", convert<double>},
     {"n_intervals", convert<int>},
     {"depth", convert<int>},
@@ -497,6 +510,7 @@ std::unordered_map<string, ConverterFunction> converters{
     {"cutoff", convert<double>},
     {"falloff", convert<double>},
     {"world_radius", convert<double>},
+    {"max_prims_per_node", convert<int>},
 };
 
 /*!
@@ -556,7 +570,7 @@ void parse_attribute(const string &attr_name /* IN value */,
 /*!
  * This is the entry point where the parsing of the scene file begins.
  */
-void Parser::parse_scene(const string filename) {
+void Parser::parse_scene(const string& filename) {
   // [1] Load document.
   tinyxml2::XMLDocument doc;
   if (doc.LoadFile(filename.c_str()) != tinyxml2::XML_SUCCESS) {

@@ -23,6 +23,7 @@
 #ifndef SSUGARY_MATH_CORE_HPP
 #define SSUGARY_MATH_CORE_HPP
 
+#include "vec2.hpp"
 #include "vec3.hpp"
 #include "vec4.hpp"
 

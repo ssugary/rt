@@ -18,7 +18,7 @@ class DepthMapIntegrator : public SamplerIntegrator {
     public:
         DepthMapIntegrator(std::shared_ptr<rt::Camera> cam, double zmin, double zmax, RGBColor near, RGBColor far, int max_depth) : SamplerIntegrator(cam, max_depth), m_zmin(zmin), m_zmax(zmax), m_near_color(near), m_far_color(far) {}
 
-        std::optional<rt::RGBColor> Li(const Ray& ray, const rt::Scene& scene, int depth) const override;
+        std::optional<rt::RGBColor> Li(const Ray& ray, const rt::Scene& scene, const int& depth) const override;
         virtual void render(const rt::Scene& scene) override;
         virtual void preprocess(const rt::Scene& scene) override;
 };

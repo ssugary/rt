@@ -48,7 +48,7 @@ template<typename T>
               * @param e2 Valor da componente Z (ou B).
               */
             
-            constexpr vec3(T e0, T e1, T e2) : e{e0, e1, e2}{};
+            constexpr vec3(const T& e0,const T& e1,const T& e2) : e{e0, e1, e2}{};
             constexpr vec3(const vec3<T>& vec) : e{vec[0], vec[1], vec[2]} {};
 
             /* Acesso de Coordenadas Espaciais */
@@ -72,14 +72,14 @@ template<typename T>
               * @param index Representa a posição acessada.
               * @return Retorna o elemento que está na posição indicada pelo parâmetro.
               */
-            constexpr T operator[](size_t index) const {return e[index];};
+            constexpr T operator[](const size_t& index) const {return e[index];};
 
             /**
               * @brief Operador de acesso aos elementos do vetor.
               * @param index Representa a posição acessada.
               * @return Retorna o elemento que está na posição indicada pelo parâmetro.
               */
-            constexpr T& operator[](size_t index){return e[index];};
+            constexpr T& operator[](const size_t& index){return e[index];};
 
             /**
               * @brief Soma dois vetores termo a termo.
@@ -100,7 +100,7 @@ template<typename T>
               * @param t Escalar que está multiplicando o vetor.
               * @return vec3<T> Novo vetor resultante.
               */
-            constexpr vec3<T> operator*(const T t) const {return vec3<T>(e[0] * t, e[1] * t, e[2] * t);};
+            constexpr vec3<T> operator*(const T& t) const {return vec3<T>(e[0] * t, e[1] * t, e[2] * t);};
 
             constexpr vec3<T> operator*(const vec3<T> &v2)const{return vec3<T>(e[0] * v2[0], e[1] * v2[1], e[2] * v2[2]);};
             /**
@@ -108,14 +108,14 @@ template<typename T>
               * @param t Escalar que está dividindo o vetor.
               * @return vec3<T> Novo vetor resultante.
               */
-            constexpr vec3<T> operator/(const T t) const {return vec3<T>(e[0]/t, e[1]/t, e[2]/t);};
+            constexpr vec3<T> operator/(const T& t) const {return vec3<T>(e[0]/t, e[1]/t, e[2]/t);};
 
             /**
               * @brief Calcula o Produto Escalar entre este vetor 3D e outro.
               * @param v2 O vetor secundário.
               * @return O valor do produto escalar.
               */
-            constexpr T dot(vec3<T> v2) const {
+            constexpr T dot(const vec3<T>& v2) const {
                 return e[0] * v2.e[0] + e[1] * v2.e[1] + e[2] * v2.e[2];
             }
 
@@ -173,7 +173,7 @@ template<typename T>
               * @param t Escalar que irá multiplicar o vetor.
               * @return vec3<T> O vetor atual após a multiplicação.
               */
-            constexpr vec3<T>& operator*=(const float t){
+            constexpr vec3<T>& operator*=(const T& t){
                 e[0] *= t;
                 e[1] *= t;
                 e[2] *= t;
@@ -185,7 +185,7 @@ template<typename T>
               * @param t Escalar que irá dividir o vetor.
               * @return vec3<T> O vetor atual após a divisão.
               */
-            constexpr vec3<T>& operator/=(const float t){
+            constexpr vec3<T>& operator/=(const T& t){
                 e[0] /= t;
                 e[1] /= t;
                 e[2] /= t;
@@ -208,7 +208,7 @@ template<typename T>
         };
         /** @brief Retorna uma cópia normalizada de um vetor 3D fornecido. */
             template<typename T>
-            inline vec3<T> unit_vec(vec3<T> v){return v / v.length();};
+            inline vec3<T> unit_vec(const vec3<T>& v){return v / v.length();};
             /**
               * @brief Multiplica um vetor por um escalar t.
               * @param t Escalar que está multiplicando o vetor.
@@ -216,7 +216,7 @@ template<typename T>
               * @return vec3<T> Novo vetor resultante.
               */
             template<typename T>
-            constexpr vec3<T> operator*(const T t, const vec3<T> &v) {
+            constexpr vec3<T> operator*(const T& t, const vec3<T> &v){
                 return v * t; 
             }
 
@@ -256,7 +256,7 @@ template<typename T>
               * @return O valor do produto escalar entre v1 e v2.
               */
             template <typename T>
-            constexpr T dot(vec3<T> v1, vec3<T> v2){
+            constexpr T dot(const vec3<T>& v1, const vec3<T>& v2){
                 return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
             }
 #endif // SSUGARY_MATH_VECTOR_3_HPP

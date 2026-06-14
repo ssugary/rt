@@ -7,43 +7,106 @@
 #include "ray.hpp"
 
 #ifndef SURFEL_HPP
-namespace rt{
+namespace rt {
 class Primitive;
 }
 #include "surfel.hpp"
-#endif  //< SURFEL_HPP
+#endif //< SURFEL_HPP
 
-namespace rt{
+#ifndef FLOAT_BOUND_HPP
+namespace rt {
+class Bounds3f;
+}
+#include "surfel.hpp"
+#endif //< FLOAT_BOUND_HPP
+
+namespace rt {
+
 constexpr float epsilon = std::numeric_limits<float>::epsilon();
+
 class Primitive {
-protected:
-  std::shared_ptr<Material> material;
 
 public:
   virtual ~Primitive() = default;
+  virtual bool box(Bounds3f &box) const = 0;
   virtual bool intersect(const Ray &r, Surfel *sf) const = 0;
   virtual bool intersect_p(const Ray &r) const = 0;
-  virtual const std::shared_ptr<Material> get_material() const {
-    return material;
-  }
+  virtual const std::shared_ptr<Material> get_material() const = 0;
 };
-}
+} // namespace rt
 #endif //< PRIMITIVE_HPP
+
+#ifndef AGGREGATE_PRIMITIVE_HPP
+#define AGGREGATE_PRIMITIVE_HPP
+
+#include <memory>
+
+namespace rt {
+
+enum AggregateType { LIST = 0, BVH };
+
+class AggregatePrimitive : public Primitive {
+public:
+  const std::shared_ptr<Material> get_material() const override;
+};
+
+} // namespace rt
+#endif //< AGGREGATE_PRIMITIVE_HPP
 
 #ifndef PRIMITIVE_LIST_HPP
 #define PRIMITIVE_LIST_HPP
 
-namespace rt{
-    
-class PrimitiveList : public Primitive {
-  private:
-    std::vector<std::shared_ptr<Primitive>> primitives;
-  public:
-    void add(std::shared_ptr<Primitive> primitive);
-    bool intersect(const Ray& ray, Surfel* isect) const override;
-    bool intersect_p(const Ray &ray) const override;
-    
+namespace rt {
+
+class PrimitiveList : public AggregatePrimitive {
+private:
+  std::vector<std::shared_ptr<Primitive>> primitives;
+
+public:
+  PrimitiveList() = default; // Construtor padrão
+  PrimitiveList(std::vector<std::shared_ptr<Primitive>> prim)
+      : primitives(prim) {}
+
+  void add(const std::shared_ptr<Primitive> &primitive);
+  bool intersect(const Ray &ray, Surfel *isect) const override;
+  bool intersect_p(const Ray &ray) const override;
+  bool box(Bounds3f &box) const override {};
+
+  // getter
+  const std::vector<std::shared_ptr<Primitive>> &get_primitives() const {
+    return primitives;
+  }
 };
-}
+} // namespace rt
 
 #endif //< PRIMITIVE_LIST_HPP
+
+#ifndef GEOMETRIC_PRIMITIVE_HPP
+#define GEOMETRIC_PRIMITIVE_HPP
+
+#include "fbounds.hpp"
+#include "shape.hpp"
+#include <memory>
+
+namespace rt {
+
+class GeometricPrimitive : public Primitive {
+private:
+  std::shared_ptr<Shape> shape;
+  std::shared_ptr<Material> material;
+
+public:
+  GeometricPrimitive(std::shared_ptr<Shape> shape,
+                     std::shared_ptr<Material> material)
+      : shape(shape), material(material) {};
+
+  bool intersect(const Ray &r, Surfel *sf) const override;
+  bool intersect_p(const Ray &r) const override;
+  void set_material(const std::shared_ptr<Material> &m) { material = m; };
+  const std::shared_ptr<Material> get_material() const override {
+    return material;
+  }
+  bool box(Bounds3f &box) const override { return shape->box(box);};
+};
+} // namespace rt
+#endif //< GEOMETRIC_PRIMITIVE_HPP

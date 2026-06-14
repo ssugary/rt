@@ -16,7 +16,7 @@ Film::Film(const Resolution &w, const Resolution &h, const string &filename,
 
 /// Add the Spectrum color to image. Pixel coords comes as (x,y).
 void Film::add(const Pixel &p, const RGBColor &c) {
-  color_buffer[p.y * m_x_res + p.x] = c;
+  color_buffer[p.y() * m_x_res + p.x()] = c;
 }
 
 /// Convert Spectrum image information to RGB, compute final pixel values, write

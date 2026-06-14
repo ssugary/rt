@@ -53,7 +53,7 @@ template<typename T>
             * @param e2 Valor do componente Z (ou B).
             * @param e3 Valor do componente W (ou A)
             */
-            constexpr vec4(T e0, T e1, T e2, T e3) : e{e0, e1, e2, e3} {};
+            constexpr vec4(const T& e0, const T& e1, const T& e2, const T& e3) : e{e0, e1, e2, e3} {};
 
             /**
             * @brief Construtor parametrizado
@@ -66,7 +66,7 @@ template<typename T>
             * @param vec Vetor com os componentes XYZ (ou RGB).
             * @param e3 Valor do componente W (ou A)
             */
-            constexpr vec4(vec3<T> vec, T e3) : e{vec[0], vec[1], vec[2], e3}{};  
+            constexpr vec4(const vec3<T>& vec, const T& e3) : e{vec[0], vec[1], vec[2], e3}{};  
 
             /* Acesso de coordenadas espaciais */
             constexpr T x() const {return e[0];};
@@ -93,14 +93,14 @@ template<typename T>
               * @param index Representa a posição acessada.
               * @return Retorna o elemento que está na posição indicada pelo parâmetro para leitura.
               */
-            constexpr T operator[](size_t index) const {return e[index];};
+            constexpr T operator[](const size_t& index) const {return e[index];};
 
             /**
               * @brief Operador de acesso aos elementos do vetor.
               * @param index Representa a posição acessada.
               * @return Retorna o elemento que está na posição indicada pelo parâmetro para modificação.
               */
-            constexpr T& operator[](size_t index){return e[index];};
+            constexpr T& operator[](const size_t& index){return e[index];};
 
             /**
               * @brief Soma dois vetores termo a termo.
@@ -121,21 +121,21 @@ template<typename T>
               * @param t Escalar que está multiplicando o vetor.
               * @return vec3<T> Novo vetor resultante.
               */
-            constexpr vec4<T> operator*(const T t) const{return vec4<T>(e[0] * t, e[1] * t, e[2] * t, e[3] * t);};
+            constexpr vec4<T> operator*(const T& t) const{return vec4<T>(e[0] * t, e[1] * t, e[2] * t, e[3] * t);};
             
             /**
               * @brief Divide um vetor por um escalar t.
               * @param t Escalar que está dividindo o vetor.
               * @return vec3<T> Novo vetor resultante.
               */
-            constexpr vec4<T> operator/(const T t) const{return vec4<T>(e[0]/t, e[1]/t, e[2]/t, e[3]/t);};
+            constexpr vec4<T> operator/(const T& t) const{return vec4<T>(e[0]/t, e[1]/t, e[2]/t, e[3]/t);};
     
             /**
               * @brief Calcula o Produto Escalar entre este vetor 4D e outro.
               * @param v2 O vetor secundário.
               * @return O valor do produto escalar.
               */
-            constexpr T dot(vec4<T> v2) const{
+            constexpr T dot(const vec4<T>& v2) const{
                 return e[0] * v2.e[0] + e[1] * v2.e[1] + e[2] * v2.e[2] + e[3] * v2.e[3];
             }
             
@@ -196,7 +196,7 @@ template<typename T>
               * @param t Escalar que irá multiplicar o vetor.
               * @return vec4<T> O vetor atual após a multiplicação.
               */
-            constexpr vec4<T>& operator*=(const T t){
+            constexpr vec4<T>& operator*=(const T& t){
                 e[0] *= t;
                 e[1] *= t;
                 e[2] *= t;
@@ -209,7 +209,7 @@ template<typename T>
               * @param t Escalar que irá dividir o vetor.
               * @return vec4<T> O vetor atual após a divisão.
               */
-            constexpr vec4<T>& operator/=(const T t){
+            constexpr vec4<T>& operator/=(const T& t){
                 e[0] /= t;
                 e[1] /= t;
                 e[2] /= t;
@@ -230,7 +230,7 @@ template<typename T>
             }
 
             /** @brief Retorna uma cópia normalizada de um vetor 4D fornecido. */
-            inline vec4<T> unit_vec(vec4<T> v){return v / v.length();};
+            inline vec4<T> unit_vec(const vec4<T>& v){return v / v.length();};
         };
 
             /**
@@ -240,7 +240,7 @@ template<typename T>
               * @return vec4<T> Novo vetor resultante.
               */
             template<typename T>
-            constexpr vec4<T> operator*(const T t, const vec4<T> &v) {
+            constexpr vec4<T> operator*(const T& t, const vec4<T> &v) {
                 return v * t; 
             }
             /** @brief Permite a leitura do vetor a partir de streams de input. */

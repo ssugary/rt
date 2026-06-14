@@ -7,7 +7,7 @@
 namespace rt {
 
 std::optional<rt::RGBColor>
-DepthMapIntegrator::Li(const Ray &ray, const rt::Scene &scene, int depth) const {
+DepthMapIntegrator::Li(const Ray &ray, const rt::Scene &scene, const int& depth) const {
   rt::Surfel isect;
 
   if (!scene.intersect(ray, &isect)) {

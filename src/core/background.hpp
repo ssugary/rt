@@ -27,11 +27,11 @@ public:
   ~Background() = default;
 
   // Sample and returns a color, based on the raster coordinate.
-  RGBColor sample(real_type u, real_type v) const;
+  RGBColor sample(const real_type& u, const real_type& v) const;
 
   // Return the linearly interpolated color in [A;B], based on the parameter
   static RGBColor linear_interpolation(const RGBColor &A, const RGBColor &B,
-                                double t);
+                                const double& t);
 
 private:
   // Each corner has a color associated with.

@@ -2,6 +2,7 @@
 #include "blinn_phong_material.hpp"
 #include "common.hpp"
 #include "light.hpp"
+#include "scenes.hpp"
 #include "visibilityTester.hpp"
 #include <algorithm>
 #include <memory>
@@ -9,14 +10,14 @@
 
 namespace rt {
 
-    std::optional<RGBColor> BlinnPhongIntegrator::Li(const Ray& ray, const rt::Scene& scene, int depth) const {
+    std::optional<RGBColor> BlinnPhongIntegrator::Li(const Ray& ray, const rt::Scene& scene, const int& depth) const {
         RGBColor L(0, 0, 0);
         Surfel isect;
         if(!scene.intersect(ray, &isect)){
             return std::nullopt;
         }
         if (dot(ray.getDirection(), isect.n) > 0) {
-           return std::nullopt;
+           isect.n = -isect.n;
         }
 
         std::shared_ptr<BlinnPhongMaterial> fm{nullptr};
@@ -70,10 +71,10 @@ namespace rt {
 
     
         if(depth < max_depth){
-            auto rd = n * 2 - v;
+            auto rd = n * 2 * dot(n, v) - v;
             rd.mk_unit_vec();
 
-            Ray reflected_ray = Ray(isect.p + rd * 0.001f, rd);
+            Ray reflected_ray = Ray(isect.p + rd * 0.0001f, rd);
             auto tempL = this->Li(reflected_ray, scene, depth + 1);
 
             if(tempL.has_value()){

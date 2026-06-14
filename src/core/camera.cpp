@@ -5,7 +5,7 @@
 
 namespace rt {
 
-OrthographicCamera::OrthographicCamera(Point3 look_from, const Point3 look_at,
+OrthographicCamera::OrthographicCamera(const Point3 look_from, const Point3 look_at,
                                        const Vec3 vup, double l, double r,
                                        double b, double t, int nx, int ny,
                                        double focal_dist) {
@@ -96,7 +96,7 @@ PerspectiveCamera::PerspectiveCamera(Point3 look_from, const Point3 look_at,
           0.0, 0.0, 0.0, 1.0);
 }
 
-Ray OrthographicCamera::generate_ray(int i, int j) {
+Ray OrthographicCamera::generate_ray(const int& i, const int& j) {
   Point4 p_raster(static_cast<double>(i), static_cast<double>(j), 0.0,
                   1.0); //< Pixel (i, j)
   Point4 p_camera{m_raster_to_screen *
@@ -111,7 +111,7 @@ Ray OrthographicCamera::generate_ray(int i, int j) {
       m_gaze_dir); //< Return a ray who travel parallel to the gaze direction
 }
 
-Ray PerspectiveCamera::generate_ray(int i, int j) {
+Ray PerspectiveCamera::generate_ray(const int& i, const int& j) {
   Point4 p_raster(static_cast<double>(i), static_cast<double>(j), 0.0,
                   1.0); //< Pixel (i, j)
   Point4 p_camera{m_raster_to_screen *

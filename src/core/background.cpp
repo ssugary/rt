@@ -22,13 +22,13 @@ Background::Background(const std::array<RGBColor, 4> &colors) {
 }
 
 RGBColor Background::linear_interpolation(const RGBColor &A, const RGBColor &B,
-                                          double t) {            
+                                          const double& t) {            
   return RGBColor{static_cast<double>((1 - t) * A.red + t * B.red),
                   static_cast<double>((1 - t) * A.green + t * B.green),
                   static_cast<double>((1 - t) * A.blue + t * B.blue)};
 };
 
-RGBColor Background::sample(real_type u, real_type v) const {  
+RGBColor Background::sample(const real_type& u, const real_type& v) const {  
   const auto bottom_horizontal =
       linear_interpolation(m_corners[BOTTOM_LEFT], m_corners[BOTTOM_RIGHT], u);
   const auto top_horizontal =

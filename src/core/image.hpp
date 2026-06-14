@@ -22,13 +22,13 @@ inline double apply_gamma(double value, double gamma = 2.2) {
     return std::pow(value, 1.0 / gamma);
 }
 /// Routines to write images to a file.
-bool save_ppm6(const std::vector<RGBColor>, Resolution, Resolution, const std::string& = "image.ppm", bool = 0);
+bool save_ppm6(const std::vector<RGBColor>&, Resolution, Resolution, const std::string& = "image.ppm", bool = 0);
 
 /// Saves an image as a **ascii** PPM file.
-bool save_ppm3(const std::vector<RGBColor>, Resolution, Resolution, const std::string& = "image.ppm", bool = 0);
+bool save_ppm3(const std::vector<RGBColor>&, Resolution, Resolution, const std::string& = "image.ppm", bool = 0);
 
 /// Saves an image as a PNG file.
-bool save_png(const std::vector<RGBColor>, Resolution, Resolution, const std::string& = "image.png", bool = 0);
+bool save_png(const std::vector<RGBColor>&, Resolution, Resolution, const std::string& = "image.png", bool = 0);
 }  // namespace rt
 // ===
 #endif

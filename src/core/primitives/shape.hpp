@@ -1,0 +1,34 @@
+#ifndef SHAPE_HPP
+#define SHAPE_HPP
+
+#include "ray.hpp"
+
+#ifndef SURFEL_HPP
+namespace rt {
+class Shape;
+}
+#include "surfel.hpp"
+#endif //< SURFEL_HPP
+
+#ifndef FLOAT_BOUND_HPP
+namespace rt {
+class Bounds3f;
+}
+#endif //< FLOAT_BOUND_HPP
+
+namespace rt {
+
+class Shape {
+protected:
+  bool flips_normal;
+
+public:
+  Shape(bool flip) : flips_normal(flip) {};
+
+  virtual bool box(Bounds3f &box) const = 0;
+  virtual bool intersect(const Ray &r, float *t_hit, Surfel *sf) const = 0;
+  virtual bool intersect_p(const Ray &r) const = 0;
+};
+
+} // namespace rt
+#endif //< SHAPE_HPP

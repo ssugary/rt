@@ -1,12 +1,10 @@
 #include "sphere.hpp"
+#include "common.hpp"
+#include "fbounds.hpp"
 
 namespace rt{
-Sphere::Sphere(Point3 center, float radius,std::shared_ptr<Material> mat)
-    : center(center), radius(radius) {
-      this->material = mat;
-    }
 
-bool Sphere::intersect(const Ray &r, Surfel *sf) const {
+bool Sphere::intersect(const Ray &r, float *t_hit, Surfel *sf) const {
   Point3 oc = r.getOrigin() - center;
   Vec3 v = r.getDirection();
 
@@ -37,17 +35,27 @@ bool Sphere::intersect(const Ray &r, Surfel *sf) const {
       }
   }
 
+  if(t_hit) *t_hit = t0;
+
   if (sf) {
     sf->time = t0;
     sf->p = r(t0);
     sf->n = (sf->p - center) / radius;
+
+    if (flips_normal) sf->n = -sf->n;
+    
     sf->wo = -r.getDirection();
-    sf->primitive = this;
+
   }
-  r.setTMax(t0);
 
   return true;
 }
+
+bool Sphere::box(Bounds3f &box) const {
+	Vec3 r_vec =Vec3(radius, radius, radius);
+	box = Bounds3f(center - r_vec, center + r_vec);
+	return true;
+};
 
 bool Sphere::intersect_p(const Ray &r) const {
   Point3 oc = r.getOrigin() - center;
@@ -81,4 +89,6 @@ bool Sphere::intersect_p(const Ray &r) const {
 
   return false;
 }
+
+
 }

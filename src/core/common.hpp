@@ -30,10 +30,11 @@ enum Corners_e {
 
 namespace rt {
 
-struct Pixel {
-	u_int64_t x;
-	u_int64_t y;
-};
+// struct Pixel {
+// 	u_int64_t x;
+// 	u_int64_t y;
+// };
+using Pixel = vec2<u_int64_t>;
 
 struct RunningOptions {
 	std::optional<array<Pixel,2>> crop_region;
@@ -49,13 +50,13 @@ struct RGBColor {
   double blue;
 
   RGBColor() : red(0), green(0), blue(0) {};
-  RGBColor(Vec3 color, std::string color_type){
+  RGBColor(const Vec3& color, std::string color_type){
      *this = RGBColor(color[0], color[1], color[2], color_type);
   };
-  RGBColor(RGBColor color, std::string color_type){
+  RGBColor(const RGBColor& color, std::string color_type){
      *this = RGBColor(color.red, color.green, color.blue, color_type);
   };
-  RGBColor(double red, double green, double blue, std::string color_type){
+  RGBColor(const double& red, const double& green, const double& blue, std::string color_type){
     
     if(color_type == "rgb"){
       this->red =  red / 255.0;
@@ -69,7 +70,7 @@ struct RGBColor {
     }
   }
 
-  RGBColor(double red, double green, double blue) : red(red), green(green), blue(blue) {};
+  RGBColor(const double& red, const double& green, const double& blue) : red(red), green(green), blue(blue) {};
 
   RGBColor operator*(const double& t  )const {return RGBColor(red * static_cast<double>(t), green * static_cast<double>(t), blue * static_cast<double>(t));}
   RGBColor operator*(const RGBColor& c) const{return RGBColor(red * c.red, green * c.green, blue * c.blue);};
@@ -78,13 +79,13 @@ struct RGBColor {
   bool operator!=(const RGBColor& c) const {return !(*this == c);};
 
 
-  double&    operator[](const size_t index){
+  double&    operator[](const size_t& index){
     if(index == 0)return red;
     if(index == 1)return green;
     return blue;
   };
 
-  double operator[](const size_t index) const {
+  double operator[](const size_t& index) const {
     if(index == 0)return red;
     if(index == 1)return green;
     return blue;

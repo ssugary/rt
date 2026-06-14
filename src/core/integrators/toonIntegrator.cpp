@@ -10,7 +10,7 @@
 
 namespace rt {
 
-    std::optional<RGBColor> ToonIntegrator::Li(const Ray& ray, const rt::Scene& scene, int depth) const {
+    std::optional<RGBColor> ToonIntegrator::Li(const Ray& ray, const rt::Scene& scene, const int& depth) const {
         RGBColor L(0, 0, 0);
         Surfel isect;
         if(!scene.intersect(ray, &isect)){

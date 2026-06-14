@@ -11,7 +11,7 @@ struct Surfel;
 #endif  //< PRIMITIVE_HPP
 
 using Mat4 = mat4<double>;
-using Point2 = std::pair<double, double>;
+using Point2 = vec2<double>;
 using Point3 = vec3<double>;
 using Point4 = vec4<double>;
 using Vec3 = vec3<double>;

@@ -29,7 +29,7 @@ public:
   ~Parser() = default;
 
   static void validate_arguments(int argc, char **argv, RunningOptions &run_opt);
-  static void parse_scene(const string filename);
+  static void parse_scene(const string& filename);
 
 };
 
@@ -40,6 +40,6 @@ bool is_valid_attribute(std::string_view tag_name, std::string_view attribute_na
 
 void parse_attribute(const string &attr_name, const string &attr_content, rt::ParamSet *ps);
 
-void print(rt::RunningOptions run_opt);
+void print(const rt::RunningOptions& run_opt);
 
 #endif //< PARSER_HPP

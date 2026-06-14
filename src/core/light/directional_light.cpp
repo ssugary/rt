@@ -8,9 +8,9 @@ namespace rt {
 
         Surfel lpos;
 
-        lpos.p = hit.p + (*wi) * world_radius;
+        // lpos.p = hit.p + (*wi) * world_radius;
 
-        *vis = VisibilityTester(hit, lpos);
+        *vis = VisibilityTester(hit, *wi);
 
         return intensity * scale ;
     }

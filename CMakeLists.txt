@@ -12,6 +12,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_BUILD_TYPE Debug) # just for gdb
 
+# set(CMAKE_BUILD_TYPE Release) # for fastier math calcs
+# set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -flto -ffast-math")
+
+find_package(OpenMP REQUIRED) # lib to divide the render's loop into threads
+
 file(GLOB_RECURSE SRC_FILES
     ${CMAKE_SOURCE_DIR}/src/core/*.cpp
     ${CMAKE_SOURCE_DIR}/src/core/integrators/*.cpp
@@ -44,6 +49,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/lib
 )
 
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX) # lib to divide the render's loop into threads
+
 target_compile_options(${PROJECT_NAME} PRIVATE
-    -Wall -Wextra -Wpedantic
-)
+    -Wall -Wextra -Wpedantic -fopenmp
+)                           #-fopenmp : flag to use OpenMP lib

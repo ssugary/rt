@@ -40,7 +40,7 @@ public:
    * @return Ray The mathematical ray configured with its origin and direction
    * in world space.
    */
-  virtual Ray generate_ray(int i, int j) = 0;
+  virtual Ray generate_ray(const int& i, const int& j) = 0;
   Point3 get_origin() { return m_origin;};  
   /**
    * @brief Function that will retrieve the data and create a camera.
@@ -84,7 +84,7 @@ public:
                      double l, double r, double b, double t, int nx, int ny,
                      double focal_dist = 1.0);
 
-  Ray generate_ray(int i, int j) override;
+  Ray generate_ray(const int& i, const int& j) override;
 };
 
 class PerspectiveCamera : public Camera {
@@ -109,7 +109,7 @@ public:
   PerspectiveCamera(Point3 look_from, const Point3 look_at, const Vec3 vup,
                     Vec3 vpn, int nx, int ny, double fovy, double focal_dist = 1.0);
 
-  Ray generate_ray(int i, int j) override;
+  Ray generate_ray(const int& i, const int& j) override;
 
 private:
   double m_fovy;

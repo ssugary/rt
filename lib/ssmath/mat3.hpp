@@ -59,9 +59,10 @@ class mat3 {
               * @details Os elementos seguem a ordem de linha (Row-Major), onde o primeiro 
               *          dígito indica a linha e o segundo a coluna (ex: e12 é linha 1, coluna 2).
               */
-            constexpr mat3(T e00, T e01, T e02, 
-                 T e10, T e11, T e12,
-                 T e20, T e21, T e22) : mat{e00, e01, e02, e10, e11, e12, e20, e21, e22}{}
+            constexpr mat3(const T& e00, const T& e01, const T& e02, 
+                           const T& e10, const T& e11, const T& e12,
+                           const T& e20, const T& e21, const T& e22)
+                          : mat{e00, e01, e02, e10, e11, e12, e20, e21, e22}{}
 
             /**
               * @brief Constrói uma matriz 3x3 a partir de três vetores vec3.
@@ -96,7 +97,7 @@ class mat3 {
               * @details Os elementos seguem a ordem de linha (Row-Major), onde o primeiro 
               *          dígito indica a linha e o segundo a coluna (ex: e12 é linha 1, coluna 2).
               */
-            constexpr mat3(std::initializer_list<T> list){
+            constexpr mat3(const std::initializer_list<T>& list){
                 mat.fill(static_cast<T>(0)); 
     
                 size_t count = std::min(static_cast<size_t>(9), list.size());
@@ -119,7 +120,7 @@ class mat3 {
               * @return Retorna o elemento que está na posição indicada pelos parâmetros 
               *         (ex: (1, 2) retorna o elemento e12) 
               */
-            constexpr T& operator()(size_t row, size_t col){return mat[row * 3 + col];}
+            constexpr T& operator()(const size_t& row, const size_t& col){return mat[row * 3 + col];}
 
             /**
               * @brief Operador de acesso constante aos elementos da matriz
@@ -128,7 +129,7 @@ class mat3 {
               * @return Retorna o elemento de que está na posição indicada pelos parâmetros 
               *         (ex: (1, 2) retorna o elemento e12) 
               */
-            constexpr T  operator()(size_t row, size_t col) const {return mat[row * 3 + col];}
+            constexpr T  operator()(const size_t& row, const size_t& col) const {return mat[row * 3 + col];}
 
             /**
               * @brief Soma duas matrizes termo a termo.
@@ -173,7 +174,7 @@ class mat3 {
               * @param t Constante que está multiplicando a matriz.
               * @return mat3<T> A nova matriz resultante.
               */
-            constexpr mat3 operator*(const T t ) const {return mat3(mat[0] * t, mat[1] * t, mat[2] * t,
+            constexpr mat3 operator*(const T& t ) const {return mat3(mat[0] * t, mat[1] * t, mat[2] * t,
                                                                     mat[3] * t, mat[4] * t, mat[5] * t,
                                                                     mat[6] * t, mat[7] * t, mat[8] * t);};
             /**
@@ -181,7 +182,7 @@ class mat3 {
               * @param t Constante que está dividindo a matriz.
               * @return mat3<T> A nova matriz resultante.
               */
-            constexpr mat3 operator/(const T t ) const {return mat3(mat[0] / t, mat[1] / t, mat[2] / t,
+            constexpr mat3 operator/(const T& t ) const {return mat3(mat[0] / t, mat[1] / t, mat[2] / t,
                                                                     mat[3] / t, mat[4] / t, mat[5] / t,
                                                                     mat[6] / t, mat[7] / t, mat[8] / t);};
             
@@ -237,7 +238,7 @@ class mat3 {
               * @param t Escalar que irá multiplicar a matriz.
               * @return mat3<T> A matriz atual após a multiplicação.
               */
-            constexpr mat3& operator*=(const T t){
+            constexpr mat3& operator*=(const T& t){
                 for(size_t i{0}; i < 9; i++){
                     mat[i] *= t;
                 }
@@ -249,7 +250,7 @@ class mat3 {
               * @param t Escalar que irá Dividir a matriz.
               * @return mat3<T> A matriz atual após a multiplicação.
               */
-            constexpr mat3& operator /=(const T t){
+            constexpr mat3& operator /=(const T& t){
                 for(size_t i{0}; i < 9; i++){
                     mat[i] /= t;
                 }

@@ -15,8 +15,9 @@ namespace rt{
 
     class VisibilityTester {
         private:
-            Surfel p0, p1;  //< Test visibility between p0 and p1.
-            Vec3 direction; //< Direction to test visibility from p0.
+            Surfel p0, p1;    //< Test visibility between p0 and p1.
+            Vec3 direction;   //< Direction to test visibility from p0.
+            bool is_infinity; //< Infinity flag
         public:
             VisibilityTester() = default;
             VisibilityTester( const Surfel&, const Surfel& );

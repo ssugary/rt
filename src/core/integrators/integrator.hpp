@@ -23,7 +23,7 @@ class SamplerIntegrator : public Integrator {
         virtual ~SamplerIntegrator() = default;
         SamplerIntegrator(std::shared_ptr<rt::Camera> cam, int max_depth) : max_depth(max_depth), camera(cam){};
 
-        virtual std::optional<RGBColor> Li(const Ray& ray, const rt::Scene& scene, int depth) const = 0;
+        virtual std::optional<RGBColor> Li(const Ray& ray, const rt::Scene& scene, const int& depth) const = 0;
         virtual void render(const rt::Scene& scene) override;
         virtual void preprocess(const rt::Scene& scene) {};
 

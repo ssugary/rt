@@ -5,12 +5,15 @@
 #include <utility>
 
 #include "api.hpp"
+#include "bvh_accel.hpp"
 #include "common.hpp"
+#include "sphere.hpp"
 #include "spot_light.hpp"
 #include "ssmath/vec3.hpp"
 #include "scenes.hpp"
 #include "toonIntegrator.hpp"
 #include "toon_material.hpp"
+#include "triangle.hpp"
 
 
 namespace rt {
@@ -155,7 +158,7 @@ void API::background(const ParamSet &ps) {
         "API::background(): Missing \"type\" specificaton for the background.");
   }
   std::shared_ptr<Background> bkg{nullptr};
-  if (type == "single_color" or type == "4_colors") {
+  if (type == "single_color" or type == "4_colors" or type == "colors") {
     bkg = create_color_background(type, ps);
   } else {
     WARNING(std::string{"API::background(): unknown background type \""} +
@@ -242,16 +245,25 @@ void API::world_end(const ParamSet &ps) {
   // ===============================================================
   // For now, we create the film here but in the future it will be
   // instantiated somewhere else.
-  // TODO: finish
 
   auto primitive_list = std::make_shared<PrimitiveList>();
   for (auto &obj : m_render_options->elements) {
     primitive_list->add(obj);
   }
 
-  auto scene =
-      std::make_unique<Scene>(primitive_list, m_render_options->background,
-                              m_render_options->light_sources);
+  std::unique_ptr<Scene> scene = nullptr;
+
+  switch (m_render_options->aggregator) {
+	  case LIST:
+		scene = std::make_unique<Scene>(primitive_list, m_render_options->background, m_render_options->light_sources);
+		break;
+	  case BVH:
+    	auto prims = ps.retrieve<int>("max_prims_per_node", 4);
+		auto bvh = std::make_shared<BVHAccel>(primitive_list->get_primitives(), prims);
+		bvh->print();
+		scene = std::make_unique<Scene>(bvh, m_render_options->background, m_render_options->light_sources);
+		break;
+  }
 
   std::unique_ptr<Film> film =
       make_film(m_render_options->setup_params["film"]);
@@ -369,6 +381,7 @@ void API::material(const ParamSet &ps) {
 void API::object(const ParamSet &ps) {
   check_in_world_block_state("API::object");
   auto type = ps.retrieve<std::string>("type", "unknown");
+  bool flip = ps.retrieve<bool>("flip", false);
   if (type == "unknown") {
     ERROR("API::object(): Missing \"type\" specification for the object.");
   }
@@ -378,42 +391,29 @@ void API::object(const ParamSet &ps) {
       ERROR("API::object(): Missing \"radius\" specification for the sphere.");
     }
     auto center = ps.retrieve<Point3>("center", {0, 0, 0});
-    m_render_options->elements.push_back(std::make_shared<Sphere>(
-        center, radius, m_render_options->current_material));
+    auto sphere = std::make_shared<Sphere>(flip, center, radius);
+    m_render_options->elements.push_back(std::make_shared<GeometricPrimitive>(sphere, m_render_options->current_material));
   } else if (type == "triangle") {
-    Point3 p0 = ps.retrieve<Point3>("p0", Point3(-1, 0, 0));
-    Point3 p1 = ps.retrieve<Point3>("p1", Point3(1, 0, 0));
-    Point3 p2 = ps.retrieve<Point3>("p2", Point3(0, 1, 0));
+    // Point3 p0 = ps.retrieve<Point3>("p0", Point3(-1, 0, 0));
+    // Point3 p1 = ps.retrieve<Point3>("p1", Point3(1, 0, 0));
+    // Point3 p2 = ps.retrieve<Point3>("p2", Point3(0, 1, 0));
+    // auto triangle = std::make_shared<Triangle>(
+    //    flip, p0, p1, p2);
+    // m_render_options->elements.push_back(std::make_shared<GeometricPrimitive>(triangle, m_render_options->current_material));
+  } else if (type == "trianglemesh"){
+    auto triangles = rt::create_triangle_mesh_shape(flip, ps);
+    for(const auto& shape : triangles){
+      auto primitive = std::make_shared<GeometricPrimitive>(shape, m_render_options->current_material);
+      m_render_options->elements.push_back(primitive);
+    }
+    std::cout << ">>> " << triangles.size() << " triângulos carregados e adicionados à cena!\n";
 
-    m_render_options->elements.push_back(std::make_shared<Triangle>(
-        p0, p1, p2, m_render_options->current_material));
   } else if (type == "plane") {
     Point3 p = ps.retrieve<Point3>("point", Point3(0, 0, 0));
     Vec3 n = ps.retrieve<Vec3>("normal", Vec3(0, 1, 0));
 
-    m_render_options->elements.push_back(
-        std::make_shared<Plane>(p, n, m_render_options->current_material));
-  } else if (type == "star") {
-    Point3 center = ps.retrieve<Point3>("center", Point3(0, 0, 0));
-    double r_outer = ps.retrieve<double>("r_outer", 2.0);
-    double r_inner = ps.retrieve<double>("r_inner", 0.8);
-
-    m_render_options->elements.push_back(std::make_shared<Star>(
-        center, r_outer, r_inner, m_render_options->current_material));
-  } else if (type == "square") {
-    Point3 p0 = ps.retrieve<Point3>("p0", Point3(-1, 0, -1));
-    Point3 p1 = ps.retrieve<Point3>("p1", Point3(1, 0, -1));
-    Point3 p2 = ps.retrieve<Point3>("p2", Point3(1, 0, 1));
-    Point3 p3 = ps.retrieve<Point3>("p3", Point3(-1, 0, 1));
-
-    m_render_options->elements.push_back(std::make_shared<Square>(
-        p0, p1, p2, p3, m_render_options->current_material));
-  } else if (type == "cube") {
-    Point3 center = ps.retrieve<Point3>("center", Point3(0, 0, 0));
-    double size = ps.retrieve<double>("size", 1.0);
-
-    m_render_options->elements.push_back(std::make_shared<Cube>(
-        center, size, m_render_options->current_material));
+    auto plane = std::make_shared<Plane>(flip, p, n);
+    m_render_options->elements.push_back(std::make_shared<GeometricPrimitive>(plane, m_render_options->current_material));
   } else
     ERROR("API::object(): Missing \"type\" specification for the object.");
 }
@@ -470,6 +470,16 @@ void API::make_named_material(const ParamSet &ps) {
 
       m_render_options->material_memory[material_id] = std::make_shared<ToonMaterial>(colors, mirror);
     }
+}
+
+void API::aggregator(const ParamSet &ps) {
+      auto type = ps.retrieve<std::string>("type", {});
+
+	  if(type == "list") {
+		  m_render_options->aggregator = AggregateType::LIST;
+	  } else if(type == "bvh") {
+		  m_render_options->aggregator = AggregateType::BVH;
+	  }
 }
 
 void API::named_material(const ParamSet &ps) {

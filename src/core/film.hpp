@@ -34,8 +34,8 @@ enum class FilmType_e {
        FilmType_e film_type, ImageType_e image_type, bool gamma_corrected = false);
   ~Film() = default;
 
-  Resolution width() { return m_x_res; };
-  Resolution height() { return m_y_res; };
+  Resolution width() const { return m_x_res; };
+  Resolution height() const { return m_y_res; };
 
   void add(const Pixel& p, const RGBColor& c);
   void write_image() const;
